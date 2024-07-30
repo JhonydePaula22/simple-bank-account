@@ -1,0 +1,335 @@
+openapi: 3.0.3
+info:
+  title: Rabobank RDC - Code assignment - Simple Bank Account
+  description: |-
+    Add description later
+
+  contact:
+    email: jonathan.paula@wearewaes.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+  - name: accounts
+    description: Everything about Account
+  - name: transactions
+    description: Everything about Transactions
+paths:
+  /accounts:
+    post:
+      tags:
+        - accounts
+      summary: Create Account
+      description: Here you may create a new account.
+      operationId: createAccount
+      requestBody:
+        description: Created Account object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAccount'
+      responses:
+        201:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        400:
+          description: Invalid data provided
+
+    get:
+      tags:
+        - accounts
+      summary: Get Account
+      description: Here you may get account details.
+      operationId: getAccount
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountNumberHeader'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Account not found
+
+  /accounts/balance:
+    get:
+      tags:
+        - accounts
+      summary: Get all accounts balance
+      description: Here you may get the balance of all accounts
+      operationId: getAllAccountsBalance
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            description: The number of items to skip before starting to collect the result set.
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+          description: The numbers of items to return.
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountsBalance'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+
+  /transactions/withdraw:
+    post:
+      tags:
+        - transactions
+      summary: Create a Money Withdraw Transaction
+      description: Here you may create a new money Withdraw transaction
+      operationId: createWithdrawTransaction
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountNumberHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAccountDebitTransaction'
+      responses:
+        201:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionReceipt'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Account not found
+
+  /transactions/transfer:
+    post:
+      tags:
+        - transactions
+      summary: Create a Money Transfer Transaction
+      description: Here you may create a new money Transfer transaction
+      operationId: createTransferTransaction
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountNumberHeader'
+        - $ref: '#/components/parameters/DestinationAccountNumberHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAccountDebitTransaction'
+      responses:
+        201:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionReceipt'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Account not found
+  /transactions/deposit:
+    post:
+      tags:
+        - transactions
+      summary: Create a Money Deposit Transaction
+      description: Here you may create a new money Deposit transaction
+      operationId: createDepositTransaction
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AccountNumberHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAccountCreditTransaction'
+      responses:
+        201:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionReceipt'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Account not found
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AccountNumberHeader:
+      in: header
+      name: account_number
+      description: 'Account Number'
+      required: true
+      schema:
+        type: string
+    DestinationAccountNumberHeader:
+      in: header
+      name: destination_account_number
+      description: 'Destination Account Number'
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    NewAccount:
+      type: object
+      properties:
+        holder:
+          $ref: '#/components/schemas/AccountHolder'
+        creditCard:
+          type: boolean
+          example: false
+
+    AccountHolder:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user identification"
+        firstName:
+          type: string
+          example: Jonathan
+        lastName:
+          type: string
+          example: de Paula
+        email:
+          type: string
+          example: jonathan.paula@wearewaes.com
+        phone:
+          type: string
+          example: '0620000000000'
+        address:
+          type: string
+          example: ' Zwaanstraat 31N, 5651 CA Eindhoven'
+
+    Card:
+      type: object
+      properties:
+        number:
+          type: string
+          example: '111100002222333'
+        securityCode:
+          type: integer
+          format: int64
+          example: 000
+        type:
+          $ref: '#/components/schemas/CardTypeEnum'
+
+    CardTypeEnum:
+      type: string
+      description: Card types
+      example: DEBIT
+      enum:
+        - CREDIT
+        - DEBIT
+
+    Account:
+      type: object
+      properties:
+        number:
+          type: integer
+          format: int64
+          example: 123450485
+        holder:
+          $ref: '#/components/schemas/AccountHolder'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Card'
+        balance:
+          type: number
+          format: double
+          example: 0,00
+
+    NewAccountDebitTransaction:
+      type: object
+      properties:
+        cardType:
+          $ref: '#/components/schemas/CardTypeEnum'
+        amount:
+          type: number
+          format: double
+          example: 100,00
+
+    NewAccountCreditTransaction:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+          example: 100,00
+
+    TransactionReceipt:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 01J41NRRPG8WQCXRFV8N16XEJ4
+        timestamp:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+
+    AccountBalance:
+      type: object
+      properties:
+        accountNumber:
+          type: integer
+          format: int64
+          example: 123450485
+        balance:
+          type: number
+          format: double
+          example: 0,00
+
+    AccountsBalance:
+      type: object
+      properties:
+        accountsBalance:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountBalance'
