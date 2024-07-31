@@ -1,8 +1,11 @@
 package com.wearewaes.simple_bank_account.domain.services;
 
+import com.wearewaes.model.AccountBalanceDTO;
 import com.wearewaes.model.AccountDTO;
+import com.wearewaes.model.AccountsBalanceDTO;
 import com.wearewaes.model.CardTypeEnum;
 import com.wearewaes.model.NewAccountDTO;
+import com.wearewaes.model.PageDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountNotFoundException;
@@ -11,6 +14,8 @@ import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHolder
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
 import jakarta.persistence.PersistenceException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -53,6 +58,31 @@ public class AccountsService {
         return toDtoMapper(accountEntity, cards);
     }
 
+    public AccountsBalanceDTO getAllAccountsBalance(Integer offset, Integer limit) {
+        Page<AccountEntity> accountEntities = accountsRepository.findAll(PageRequest.of(offset, limit));
+        PageDTO pageDTO = populatePageDTOData(accountEntities);
+        AccountsBalanceDTO accountsBalanceDTO = new AccountsBalanceDTO();
+        accountsBalanceDTO.setPageDetails(pageDTO);
+        accountsBalanceDTO.setAccountsBalance(accountEntities.map(accountEntity -> {
+            AccountBalanceDTO accountBalanceDTO = new AccountBalanceDTO();
+            accountBalanceDTO.setAccountNumber(accountEntity.getNumber());
+            accountBalanceDTO.setBalance(accountEntity.getBalance().doubleValue());
+            return accountBalanceDTO;
+        }).stream().toList());
+        return accountsBalanceDTO;
+    }
+
+    private static PageDTO populatePageDTOData(Page<AccountEntity> accountEntities) {
+        PageDTO pageDTO = new PageDTO();
+        pageDTO.setFirst(accountEntities.isFirst());
+        pageDTO.setLast(accountEntities.isLast());
+        pageDTO.setNumber(accountEntities.getNumber());
+        pageDTO.setTotalPages(accountEntities.getTotalPages());
+        pageDTO.setTotalElements(accountEntities.getTotalElements());
+        pageDTO.setSize(accountEntities.getSize());
+        return pageDTO;
+    }
+
     List<CardEntity> generateCards(AccountEntity accountEntity, boolean creditCard) {
         CardEntity debitCardEntity = generateCard(accountEntity, CardTypeEnum.DEBIT);
         List<CardEntity> cards = new ArrayList<>();
@@ -76,7 +106,7 @@ public class AccountsService {
     }
 
     static String generateCardNumber() {
-        return String.format("%14d",RANDOM.nextLong() & 0xFFFFFFFFFFFFL).trim(); // 48-bit card number
+        return String.format("%14d", RANDOM.nextLong() & 0xFFFFFFFFFFFFL).trim(); // 48-bit card number
     }
 
     static String generateCVV() {

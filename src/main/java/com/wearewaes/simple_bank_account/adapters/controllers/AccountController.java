@@ -35,7 +35,7 @@ public class AccountController implements AccountsApi {
 
     @Override
     public ResponseEntity<AccountsBalanceDTO> getAllAccountsBalance(Integer offset, Integer limit) {
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.ok(accountCommands.getAllAccountsBalance(offset, limit));
     }
 
     @ExceptionHandler(value = AccountNotFoundException.class)

@@ -316,8 +316,7 @@ components:
       type: object
       properties:
         accountNumber:
-          type: integer
-          format: int64
+          type: string
           example: 123450485
         balance:
           type: number
@@ -331,3 +330,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccountBalanceDTO'
+        pageDetails:
+          $ref: '#/components/schemas/PageDTO'
+
+    PageDTO:
+      type: object
+      properties:
+        first:
+          type: boolean
+          example: true
+        last:
+          type: boolean
+          example: false
+        totalPages:
+          type: integer
+          example: 2
+        totalElements:
+          type: integer
+          format: int64
+          example: 200
+        size:
+          type: integer
+          example: 10
+        number:
+          type: integer
+          example: 1

@@ -2,6 +2,7 @@ package com.wearewaes.simple_bank_account.adapters.controllers;
 
 import com.wearewaes.model.AccountDTO;
 import com.wearewaes.model.AccountHolderDTO;
+import com.wearewaes.model.AccountsBalanceDTO;
 import com.wearewaes.model.CardDTO;
 import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.simple_bank_account.TestContainersSetUp;
@@ -110,6 +111,39 @@ class AccountControllerIT extends TestContainersSetUp {
 
                     assertNotNull(response);
                     assertEquals(accountDTO, response);
+                });
+    }
+
+
+
+    @Test
+    void getAllAccountsBalance() throws Exception {
+        var newAccount = generateNewAccount(true);
+
+        var dtoJson = objectMapper.writeValueAsString(newAccount);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(dtoJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accounts/balance")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(result -> {
+                    AccountsBalanceDTO response = objectMapper
+                            .readValue(result.getResponse().getContentAsString(), AccountsBalanceDTO.class);
+
+                    assertNotNull(response);
+                    assertNotNull(response.getPageDetails());
+                    assertTrue(response.getPageDetails().getFirst());
+                    assertTrue(response.getPageDetails().getLast());
+                    assertEquals(20, response.getPageDetails().getSize());
+                    assertEquals(0, response.getPageDetails().getNumber());
+                    assertFalse(response.getAccountsBalance().isEmpty());
+                    assertNotNull(response.getAccountsBalance().getFirst().getAccountNumber());
+                    assertEquals(0, response.getAccountsBalance().getFirst().getBalance());
                 });
     }
 
