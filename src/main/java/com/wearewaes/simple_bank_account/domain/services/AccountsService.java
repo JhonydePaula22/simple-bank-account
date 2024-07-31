@@ -9,7 +9,8 @@ import com.wearewaes.simple_bank_account.domain.model.CardEntity;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.PersistenceException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class AccountsService {
         this.cardsRepository = cardsRepository;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {PersistenceException.class})
     public AccountDTO createAccount(NewAccountDTO newAccountDTO) {
         AccountHolderEntity newAccountEntityHolder = toAccountEntityHolder(newAccountDTO);
         AccountHolderEntity persistedAccountHolder = accountHoldersRepository.saveAccountHolder(newAccountEntityHolder);
@@ -44,7 +45,7 @@ public class AccountsService {
         return toDtoMapper(persistedAccount, cardEntities);
     }
 
-    private List<CardEntity> generateCards(AccountEntity accountEntity, boolean creditCard) {
+    List<CardEntity> generateCards(AccountEntity accountEntity, boolean creditCard) {
         CardEntity debitCardEntity = generateCard(accountEntity, CardTypeEnum.DEBIT);
         List<CardEntity> cards = new ArrayList<>();
         cards.add(cardsRepository.saveCard(debitCardEntity));
@@ -57,7 +58,7 @@ public class AccountsService {
         return cards;
     }
 
-    private static CardEntity generateCard(AccountEntity accountEntity, CardTypeEnum cardType) {
+    static CardEntity generateCard(AccountEntity accountEntity, CardTypeEnum cardType) {
         return new CardEntity(
                 generateCardNumber(),
                 generateCVV(),
@@ -66,18 +67,18 @@ public class AccountsService {
         );
     }
 
-    private static String generateCardNumber() {
+    static String generateCardNumber() {
         return String.format("%14d",RANDOM.nextLong() & 0xFFFFFFFFFFFFL); // 48-bit card number
     }
 
-    private static String generateCVV() {
+    static String generateCVV() {
         // Generate a number with cvvLength digits
         int cvv = RANDOM.nextInt((int) Math.pow(10, 3));
         // Format the CVV to ensure it has the correct number of digits
         return String.format("%03d", cvv);
     }
 
-    private static String generateBankAccountNumber() {
+    static String generateBankAccountNumber() {
         // Generates a 9-digit number and adds 100000000 to ensure 10 digits
         return String.format("%10d", RANDOM.nextInt(900000000) + 100000000);
     }
