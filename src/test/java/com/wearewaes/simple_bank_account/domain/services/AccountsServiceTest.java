@@ -12,6 +12,7 @@ import com.wearewaes.simple_bank_account.domain.model.CardEntity;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -48,23 +49,13 @@ class AccountsServiceTest {
     @Test
     void testCreateAccount() {
         // Arrange
-        AccountHolderDTO accountHolderDTO = new AccountHolderDTO();
-        accountHolderDTO.setId("123456");
-        accountHolderDTO.setFirstName("Jonathan");
-        accountHolderDTO.setLastName("de Paula");
-        accountHolderDTO.setEmail("Jonathan.Paula@wearewaes.com");
-        accountHolderDTO.setPhone("1234567890");
-        accountHolderDTO.setAddress("Zwaanstraat 31N, 5651 CA Eindhoven");
+        AccountHolderDTO accountHolderDTO = generateAccountHolderDto();
 
-        NewAccountDTO newAccountDTO = new NewAccountDTO();
-        newAccountDTO.setHolder(accountHolderDTO);
-        newAccountDTO.setCreditCard(true);
+        NewAccountDTO newAccountDTO = generateNewAccountDTO(accountHolderDTO, true);
 
-        AccountHolderEntity persistedAccountHolder = new AccountHolderEntity(
-                UUID.randomUUID(), "123456", "Jonathan", "de Paula", "Jonathan.Paula@wearewaes.com", "1234567890", "Zwaanstraat 31N, 5651 CA Eindhoven");
+        AccountHolderEntity persistedAccountHolder = generateAccountHolderEntity();
 
-        AccountEntity persistedAccount = new AccountEntity(
-                UUID.randomUUID(), persistedAccountHolder, "12345", BigDecimal.ZERO);
+        AccountEntity persistedAccount = generateAccountEntity(persistedAccountHolder, "12345");
 
         CardEntity debitCardEntity = generateCard(persistedAccount, CardTypeEnum.DEBIT);
         CardEntity creditCardEntity = generateCard(persistedAccount, CardTypeEnum.CREDIT);
@@ -102,11 +93,26 @@ class AccountsServiceTest {
         verify(cardsRepository, times(2)).saveCard(any(CardEntity.class));
     }
 
+    private static @NotNull AccountEntity generateAccountEntity(AccountHolderEntity persistedAccountHolder, String number) {
+        return new AccountEntity(
+                UUID.randomUUID(), persistedAccountHolder, number, BigDecimal.ZERO);
+    }
+
+    private static AccountHolderEntity generateAccountHolderEntity() {
+        return new AccountHolderEntity(
+                UUID.randomUUID(),
+                "123456",
+                "Jonathan",
+                "de Paula",
+                "Jonathan.Paula@wearewaes.com",
+                "1234567890",
+                "Zwaanstraat 31N, 5651 CA Eindhoven");
+    }
+
     @Test
     void testGenerateCards() {
         // Arrange
-        AccountEntity accountEntity = new AccountEntity(
-                UUID.randomUUID(), null, "12345", BigDecimal.ZERO);
+        AccountEntity accountEntity = generateAccountEntity(null, "12345");
         boolean creditCard = true;
 
         CardEntity debitCardEntity = generateCard(accountEntity, CardTypeEnum.DEBIT);
@@ -130,8 +136,7 @@ class AccountsServiceTest {
     @Test
     void testGenerateCard() {
         // Arrange
-        AccountEntity accountEntity = new AccountEntity(
-                UUID.randomUUID(), null, "12345", BigDecimal.ZERO);
+        AccountEntity accountEntity = generateAccountEntity(null, "12345");
         CardTypeEnum cardType = CardTypeEnum.DEBIT;
 
         // Act
@@ -146,11 +151,9 @@ class AccountsServiceTest {
     void testGetAccountSuccess() {
         // Arrange
         String accountNumber = "12345";
-        AccountHolderEntity accountHolder = new AccountHolderEntity(
-                UUID.randomUUID(), "123456", "Jonathan", "de Paula", "Jonathan.Paula@wearewaes.com", "1234567890", "Zwaanstraat 31N, 5651 CA Eindhoven");
+        AccountHolderEntity accountHolder = generateAccountHolderEntity();
 
-        AccountEntity accountEntity = new AccountEntity(
-                UUID.randomUUID(), accountHolder, "12345", BigDecimal.ZERO);
+        AccountEntity accountEntity = generateAccountEntity(accountHolder, accountNumber);
         accountEntity.setNumber(accountNumber);
         List<CardEntity> cards = Collections.emptyList();
 
@@ -178,5 +181,23 @@ class AccountsServiceTest {
         assertThrows(AccountNotFoundException.class, () -> accountsService.getAccount(accountNumber));
         verify(accountsRepository).findByNumber(accountNumber);
         verify(cardsRepository, never()).findCardsByAccount(any(AccountEntity.class));
+    }
+
+    private static NewAccountDTO generateNewAccountDTO(AccountHolderDTO accountHolderDTO, boolean creditCard) {
+        NewAccountDTO newAccountDTO = new NewAccountDTO();
+        newAccountDTO.setHolder(accountHolderDTO);
+        newAccountDTO.setCreditCard(creditCard);
+        return newAccountDTO;
+    }
+
+    private static AccountHolderDTO generateAccountHolderDto() {
+        AccountHolderDTO accountHolderDTO = new AccountHolderDTO();
+        accountHolderDTO.setId("123456");
+        accountHolderDTO.setFirstName("Jonathan");
+        accountHolderDTO.setLastName("de Paula");
+        accountHolderDTO.setEmail("Jonathan.Paula@wearewaes.com");
+        accountHolderDTO.setPhone("1234567890");
+        accountHolderDTO.setAddress("Zwaanstraat 31N, 5651 CA Eindhoven");
+        return accountHolderDTO;
     }
 }

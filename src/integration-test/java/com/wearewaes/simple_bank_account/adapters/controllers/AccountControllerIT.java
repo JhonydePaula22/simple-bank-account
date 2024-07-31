@@ -35,7 +35,7 @@ class AccountControllerIT extends TestContainersSetUp {
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void createAccountWithoutCreditCard() throws Exception {
