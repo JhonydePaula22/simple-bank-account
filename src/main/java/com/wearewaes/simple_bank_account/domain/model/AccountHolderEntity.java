@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "holder", schema = "accounts")
-public record AccountHolder(
+public record AccountHolderEntity(
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
         UUID id,
 

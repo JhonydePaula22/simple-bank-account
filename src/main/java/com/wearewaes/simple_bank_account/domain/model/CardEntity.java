@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "card", schema = "accounts")
-public record Card(
+public record CardEntity(
         @Id
         long number,
 
@@ -21,5 +21,5 @@ public record Card(
 
         @ManyToOne
         @JoinColumn(name = "account_id", nullable = false)
-        Account account
+        AccountEntity accountEntity
 ) {}

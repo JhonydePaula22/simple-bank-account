@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "transaction", schema = "accounts")
-public record Transaction(
+public record TransactionEntity(
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
         UUID id,
 
@@ -39,14 +39,14 @@ public record Transaction(
 
         @ManyToOne
         @JoinColumn(name = "account_id", nullable = false)
-        Account account,
+        AccountEntity accountEntity,
 
         @Column(name = "account_balance", nullable = false, precision = 10, scale = 2)
         BigDecimal accountBalance,
 
         @ManyToOne
         @JoinColumn(name = "card_id", nullable = false)
-        Card card,
+        CardEntity cardEntity,
 
         @Column(name = "ref_transaction", nullable = false)
         UUID refTransaction

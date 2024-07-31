@@ -14,13 +14,13 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "account", schema = "accounts")
-public record Account(
+public record AccountEntity(
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
         UUID id,
 
         @ManyToOne
         @JoinColumn(name = "holder_id", nullable = false)
-        AccountHolder holder,
+        AccountHolderEntity holder,
 
         @Column(nullable = false)
         @GeneratedValue(strategy = GenerationType.IDENTITY)
