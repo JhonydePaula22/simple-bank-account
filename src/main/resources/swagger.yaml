@@ -27,14 +27,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewAccount'
+              $ref: '#/components/schemas/NewAccountDTO'
       responses:
         201:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Account'
+                $ref: '#/components/schemas/AccountDTO'
         400:
           description: Invalid data provided
 
@@ -54,7 +54,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Account'
+                $ref: '#/components/schemas/AccountDTO'
         401:
           description: Unauthorized
         403:
@@ -95,7 +95,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountsBalance'
+                $ref: '#/components/schemas/AccountsBalanceDTO'
         401:
           description: Unauthorized
         403:
@@ -116,14 +116,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewAccountDebitTransaction'
+              $ref: '#/components/schemas/NewAccountDebitTransactionDTO'
       responses:
         201:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionReceipt'
+                $ref: '#/components/schemas/TransactionReceiptDTO'
         401:
           description: Unauthorized
         403:
@@ -147,14 +147,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewAccountDebitTransaction'
+              $ref: '#/components/schemas/NewAccountDebitTransactionDTO'
       responses:
         201:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionReceipt'
+                $ref: '#/components/schemas/TransactionReceiptDTO'
         401:
           description: Unauthorized
         403:
@@ -176,14 +176,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewAccountCreditTransaction'
+              $ref: '#/components/schemas/NewAccountCreditTransactionDTO'
       responses:
         201:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionReceipt'
+                $ref: '#/components/schemas/TransactionReceiptDTO'
         401:
           description: Unauthorized
         403:
@@ -215,16 +215,16 @@ components:
         type: string
 
   schemas:
-    NewAccount:
+    NewAccountDTO:
       type: object
       properties:
         holder:
-          $ref: '#/components/schemas/AccountHolder'
+          $ref: '#/components/schemas/AccountHolderDTO'
         creditCard:
           type: boolean
           example: false
 
-    AccountHolder:
+    AccountHolderDTO:
       type: object
       properties:
         id:
@@ -244,9 +244,9 @@ components:
           example: '0620000000000'
         address:
           type: string
-          example: ' Zwaanstraat 31N, 5651 CA Eindhoven'
+          example: Zwaanstraat 31N, 5651 CA Eindhoven
 
-    Card:
+    CardDTO:
       type: object
       properties:
         number:
@@ -267,7 +267,7 @@ components:
         - CREDIT
         - DEBIT
 
-    Account:
+    AccountDTO:
       type: object
       properties:
         number:
@@ -275,17 +275,17 @@ components:
           format: int64
           example: 123450485
         holder:
-          $ref: '#/components/schemas/AccountHolder'
+          $ref: '#/components/schemas/AccountHolderDTO'
         cards:
           type: array
           items:
-            $ref: '#/components/schemas/Card'
+            $ref: '#/components/schemas/CardDTO'
         balance:
           type: number
           format: double
           example: 0,00
 
-    NewAccountDebitTransaction:
+    NewAccountDebitTransactionDTO:
       type: object
       properties:
         cardType:
@@ -295,7 +295,7 @@ components:
           format: double
           example: 100,00
 
-    NewAccountCreditTransaction:
+    NewAccountCreditTransactionDTO:
       type: object
       properties:
         amount:
@@ -303,7 +303,7 @@ components:
           format: double
           example: 100,00
 
-    TransactionReceipt:
+    TransactionReceiptDTO:
       type: object
       properties:
         id:
@@ -314,7 +314,7 @@ components:
           format: date-time
           example: 2017-07-21T17:32:28Z
 
-    AccountBalance:
+    AccountBalanceDTO:
       type: object
       properties:
         accountNumber:
@@ -326,10 +326,10 @@ components:
           format: double
           example: 0,00
 
-    AccountsBalance:
+    AccountsBalanceDTO:
       type: object
       properties:
         accountsBalance:
           type: array
           items:
-            $ref: '#/components/schemas/AccountBalance'
+            $ref: '#/components/schemas/AccountBalanceDTO'
