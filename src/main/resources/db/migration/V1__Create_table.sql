@@ -21,7 +21,7 @@ CREATE INDEX idx_holder_id ON accounts.holder (id);
 CREATE TABLE accounts.account (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     holder_id UUID NOT NULL,
-    number VARCHAR(10) NOT NULL,
+    number VARCHAR(10) UNIQUE NOT NULL,
     balance NUMERIC(10, 2) NOT NULL CHECK (balance >= 0) DEFAULT 0,
     FOREIGN KEY (holder_id) REFERENCES accounts.holder(id)
 );

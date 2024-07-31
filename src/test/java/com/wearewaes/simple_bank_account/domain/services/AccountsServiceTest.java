@@ -7,6 +7,7 @@ import com.wearewaes.model.CardTypeEnum;
 import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
+import com.wearewaes.simple_bank_account.domain.model.AccountNotFoundException;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
@@ -16,16 +17,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import static com.wearewaes.simple_bank_account.domain.model.mappers.AccountMappers.toAccountEntityHolder;
-import static com.wearewaes.simple_bank_account.domain.model.mappers.AccountMappers.toAccountEntityMapper;
-import static com.wearewaes.simple_bank_account.domain.services.AccountsService.generateCVV;
 import static com.wearewaes.simple_bank_account.domain.services.AccountsService.generateCard;
-import static com.wearewaes.simple_bank_account.domain.services.AccountsService.generateCardNumber;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,11 +60,9 @@ class AccountsServiceTest {
         newAccountDTO.setHolder(accountHolderDTO);
         newAccountDTO.setCreditCard(true);
 
-        AccountHolderEntity accountHolderEntity = toAccountEntityHolder(newAccountDTO);
         AccountHolderEntity persistedAccountHolder = new AccountHolderEntity(
                 UUID.randomUUID(), "123456", "Jonathan", "de Paula", "Jonathan.Paula@wearewaes.com", "1234567890", "Zwaanstraat 31N, 5651 CA Eindhoven");
 
-        AccountEntity accountEntity = toAccountEntityMapper(persistedAccountHolder, "12345");
         AccountEntity persistedAccount = new AccountEntity(
                 UUID.randomUUID(), persistedAccountHolder, "12345", BigDecimal.ZERO);
 
@@ -144,29 +143,40 @@ class AccountsServiceTest {
     }
 
     @Test
-    void testGenerateCardNumber() {
+    void testGetAccountSuccess() {
+        // Arrange
+        String accountNumber = "12345";
+        AccountHolderEntity accountHolder = new AccountHolderEntity(
+                UUID.randomUUID(), "123456", "Jonathan", "de Paula", "Jonathan.Paula@wearewaes.com", "1234567890", "Zwaanstraat 31N, 5651 CA Eindhoven");
+
+        AccountEntity accountEntity = new AccountEntity(
+                UUID.randomUUID(), accountHolder, "12345", BigDecimal.ZERO);
+        accountEntity.setNumber(accountNumber);
+        List<CardEntity> cards = Collections.emptyList();
+
+        when(accountsRepository.findByNumber(accountNumber)).thenReturn(Optional.of(accountEntity));
+        when(cardsRepository.findCardsByAccount(accountEntity)).thenReturn(cards);
+
         // Act
-        String cardNumber = generateCardNumber();
+        AccountDTO result = accountsService.getAccount(accountNumber);
 
         // Assert
-        assertThat(cardNumber).hasSize(14);
+        assertThat(result).isNotNull();
+        assertThat(result.getNumber()).isEqualTo(accountNumber);
+        verify(accountsRepository).findByNumber(accountNumber);
+        verify(cardsRepository).findCardsByAccount(accountEntity);
     }
 
     @Test
-    void testGenerateCVV() {
-        // Act
-        String cvv = generateCVV();
+    void testGetAccountNotFound() {
+        // Arrange
+        String accountNumber = "12345";
 
-        // Assert
-        assertThat(cvv).hasSize(3);
-    }
+        when(accountsRepository.findByNumber(accountNumber)).thenReturn(Optional.empty());
 
-    @Test
-    void testGenerateBankAccountNumber() {
-        // Act
-        String accountNumber = AccountsService.generateBankAccountNumber();
-
-        // Assert
-        assertThat(accountNumber).hasSize(10);
+        // Act & Assert
+        assertThrows(AccountNotFoundException.class, () -> accountsService.getAccount(accountNumber));
+        verify(accountsRepository).findByNumber(accountNumber);
+        verify(cardsRepository, never()).findCardsByAccount(any(AccountEntity.class));
     }
 }

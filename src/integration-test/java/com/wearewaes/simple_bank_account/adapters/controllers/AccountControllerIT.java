@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +81,56 @@ class AccountControllerIT extends TestContainersSetUp {
                     assertTrue(response.getCards().stream().anyMatch(cardDTO -> cardDTO.getType().equals(DEBIT)));
                     assertTrue(response.getCards().stream().anyMatch(cardDTO -> cardDTO.getType().equals(CREDIT)));
                     assertNotNull(response.getNumber());
+                });
+    }
+
+    @Test
+    void getAccount() throws Exception {
+        var newAccount = generateNewAccount(true);
+
+        var dtoJson = objectMapper.writeValueAsString(newAccount);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(dtoJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+
+        String accountDtoJson = mvcResult.getResponse().getContentAsString();
+        AccountDTO accountDTO = objectMapper.readValue(accountDtoJson, AccountDTO.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("account_number", accountDTO.getNumber())
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(result -> {
+                    AccountDTO response = objectMapper
+                            .readValue(result.getResponse().getContentAsString(), AccountDTO.class);
+
+                    assertNotNull(response);
+                    assertEquals(accountDTO, response);
+                });
+    }
+
+    @Test
+    void getAccountBadRequestWrongAccountNumber() throws Exception {
+        var newAccount = generateNewAccount(true);
+
+        var dtoJson = objectMapper.writeValueAsString(newAccount);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("account_number", "invalid_acc_number")
+                )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> {
+                    ProblemDetail response = objectMapper
+                            .readValue(result.getResponse().getContentAsString(), ProblemDetail.class);
+
+                    assertNotNull(response);
+                    assertEquals("The account number informed is not a valid one.", response.getDetail());
+                    assertEquals(URI.create("/accounts"), response.getInstance());
                 });
     }
 

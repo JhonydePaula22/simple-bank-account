@@ -5,6 +5,7 @@ import com.wearewaes.model.CardTypeEnum;
 import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
+import com.wearewaes.simple_bank_account.domain.model.AccountNotFoundException;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
@@ -45,6 +46,13 @@ public class AccountsService {
         return toDtoMapper(persistedAccount, cardEntities);
     }
 
+    public AccountDTO getAccount(String accountNumber) {
+        AccountEntity accountEntity = accountsRepository.findByNumber(accountNumber).orElseThrow(
+                () -> new AccountNotFoundException("The account number informed is not a valid one."));
+        List<CardEntity> cards = cardsRepository.findCardsByAccount(accountEntity);
+        return toDtoMapper(accountEntity, cards);
+    }
+
     List<CardEntity> generateCards(AccountEntity accountEntity, boolean creditCard) {
         CardEntity debitCardEntity = generateCard(accountEntity, CardTypeEnum.DEBIT);
         List<CardEntity> cards = new ArrayList<>();
@@ -68,18 +76,18 @@ public class AccountsService {
     }
 
     static String generateCardNumber() {
-        return String.format("%14d",RANDOM.nextLong() & 0xFFFFFFFFFFFFL); // 48-bit card number
+        return String.format("%14d",RANDOM.nextLong() & 0xFFFFFFFFFFFFL).trim(); // 48-bit card number
     }
 
     static String generateCVV() {
         // Generate a number with cvvLength digits
         int cvv = RANDOM.nextInt((int) Math.pow(10, 3));
         // Format the CVV to ensure it has the correct number of digits
-        return String.format("%03d", cvv);
+        return String.format("%03d", cvv).trim();
     }
 
     static String generateBankAccountNumber() {
         // Generates a 9-digit number and adds 100000000 to ensure 10 digits
-        return String.format("%10d", RANDOM.nextInt(900000000) + 100000000);
+        return String.format("%10d", RANDOM.nextInt(900000000) + 100000000).trim();
     }
 }

@@ -15,4 +15,8 @@ public class AccountCommands {
     public AccountDTO createAccount(NewAccountDTO newAccountDTO) {
         return accountsService.createAccount(newAccountDTO);
     }
+
+    public AccountDTO getAccount(String accountNumber) {
+        return accountsService.getAccount(accountNumber);
+    }
 }
