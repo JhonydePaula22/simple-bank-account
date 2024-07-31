@@ -49,11 +49,11 @@ class AccountsServiceTest {
         // Arrange
         AccountHolderDTO accountHolderDTO = new AccountHolderDTO();
         accountHolderDTO.setId("123456");
-        accountHolderDTO.setFirstName("John");
-        accountHolderDTO.setLastName("Doe");
-        accountHolderDTO.setEmail("john.doe@example.com");
+        accountHolderDTO.setFirstName("Jonathan");
+        accountHolderDTO.setLastName("de Paula");
+        accountHolderDTO.setEmail("Jonathan.Paula@wearewaes.com");
         accountHolderDTO.setPhone("1234567890");
-        accountHolderDTO.setAddress("123 Elm Street");
+        accountHolderDTO.setAddress("Zwaanstraat 31N, 5651 CA Eindhoven");
 
         NewAccountDTO newAccountDTO = new NewAccountDTO();
         newAccountDTO.setHolder(accountHolderDTO);
@@ -61,7 +61,7 @@ class AccountsServiceTest {
 
         AccountHolderEntity accountHolderEntity = toAccountEntityHolder(newAccountDTO);
         AccountHolderEntity persistedAccountHolder = new AccountHolderEntity(
-                UUID.randomUUID(), "123456", "John", "Doe", "john.doe@example.com", "1234567890", "123 Elm Street");
+                UUID.randomUUID(), "123456", "Jonathan", "de Paula", "Jonathan.Paula@wearewaes.com", "1234567890", "Zwaanstraat 31N, 5651 CA Eindhoven");
 
         AccountEntity accountEntity = toAccountEntityMapper(persistedAccountHolder, "12345");
         AccountEntity persistedAccount = new AccountEntity(
@@ -83,11 +83,11 @@ class AccountsServiceTest {
 
         // Assert
         assertThat(result.getHolder().getId()).isEqualTo("123456");
-        assertThat(result.getHolder().getFirstName()).isEqualTo("John");
-        assertThat(result.getHolder().getLastName()).isEqualTo("Doe");
-        assertThat(result.getHolder().getEmail()).isEqualTo("john.doe@example.com");
+        assertThat(result.getHolder().getFirstName()).isEqualTo("Jonathan");
+        assertThat(result.getHolder().getLastName()).isEqualTo("de Paula");
+        assertThat(result.getHolder().getEmail()).isEqualTo("Jonathan.Paula@wearewaes.com");
         assertThat(result.getHolder().getPhone()).isEqualTo("1234567890");
-        assertThat(result.getHolder().getAddress()).isEqualTo("123 Elm Street");
+        assertThat(result.getHolder().getAddress()).isEqualTo("Zwaanstraat 31N, 5651 CA Eindhoven");
         assertThat(result.getNumber()).isEqualTo("12345");
         assertThat(result.getBalance()).isEqualTo(0.0);
         assertThat(result.getCards()).hasSize(2);
