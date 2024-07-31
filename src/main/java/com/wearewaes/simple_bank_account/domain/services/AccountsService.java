@@ -8,7 +8,7 @@ import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.model.PageDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
-import com.wearewaes.simple_bank_account.domain.model.AccountNotFoundException;
+import com.wearewaes.simple_bank_account.domain.model.exceptions.AccountNotFoundException;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;

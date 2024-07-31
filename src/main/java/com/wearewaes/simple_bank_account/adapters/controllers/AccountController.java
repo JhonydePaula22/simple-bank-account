@@ -5,7 +5,7 @@ import com.wearewaes.model.AccountDTO;
 import com.wearewaes.model.AccountsBalanceDTO;
 import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.simple_bank_account.domain.commands.AccountCommands;
-import com.wearewaes.simple_bank_account.domain.model.AccountNotFoundException;
+import com.wearewaes.simple_bank_account.domain.model.exceptions.AccountNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
