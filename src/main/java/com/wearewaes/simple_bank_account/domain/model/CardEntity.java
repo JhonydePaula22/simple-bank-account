@@ -3,6 +3,8 @@ package com.wearewaes.simple_bank_account.domain.model;
 import com.wearewaes.model.CardTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,12 +21,13 @@ import lombok.NoArgsConstructor;
 public class CardEntity{
 
         @Id
-        private Long number;
+        private String number;
 
         @Column(nullable = false, length = 4)
         private String cvv;
 
         @Column(nullable = false)
+        @Enumerated(EnumType.STRING)
         private CardTypeEnum type;
 
         @ManyToOne

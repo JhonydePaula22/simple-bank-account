@@ -31,7 +31,7 @@ public class AccountEntity{
         private AccountHolderEntity holder;
 
         @Column(nullable = false)
-        private Integer number;
+        private String number;
 
         @Column(nullable = false, precision = 10, scale = 2)
         private BigDecimal balance = BigDecimal.ZERO;

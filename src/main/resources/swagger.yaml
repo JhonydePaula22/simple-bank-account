@@ -251,10 +251,9 @@ components:
       properties:
         number:
           type: string
-          example: '111100002222333'
+          example: 111100002222333
         securityCode:
-          type: integer
-          format: int64
+          type: string
           example: 000
         type:
           $ref: '#/components/schemas/CardTypeEnum'
@@ -271,8 +270,7 @@ components:
       type: object
       properties:
         number:
-          type: integer
-          format: int64
+          type: string
           example: 123450485
         holder:
           $ref: '#/components/schemas/AccountHolderDTO'

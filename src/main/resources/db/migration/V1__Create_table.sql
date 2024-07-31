@@ -21,7 +21,7 @@ CREATE INDEX idx_holder_id ON accounts.holder (id);
 CREATE TABLE accounts.account (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     holder_id UUID NOT NULL,
-    number SERIAL NOT NULL,
+    number VARCHAR(10) NOT NULL,
     balance NUMERIC(10, 2) NOT NULL CHECK (balance >= 0) DEFAULT 0,
     FOREIGN KEY (holder_id) REFERENCES accounts.holder(id)
 );
@@ -31,8 +31,8 @@ CREATE INDEX idx_account_number ON accounts.account (number);
 
 -- Create the card table
 CREATE TABLE accounts.card (
-    number BIGINT PRIMARY KEY,
-    cvv CHAR(4) NOT NULL CHECK (cvv ~ '^\d{4}$'),
+    number VARCHAR(20) PRIMARY KEY,
+    cvv CHAR(3) NOT NULL CHECK (cvv ~ '^\d{3}$'),
     type VARCHAR(10) NOT NULL CHECK (type IN ('CREDIT', 'DEBIT')),
     account_id UUID NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts.account(id)
@@ -51,7 +51,7 @@ CREATE TABLE accounts.transaction (
     total_amount NUMERIC(10, 2) NOT NULL,
     account_id UUID NOT NULL,
     account_balance NUMERIC(10, 2) NOT NULL CHECK (account_balance >= 0) DEFAULT 0,
-    card_id BIGINT NOT NULL,
+    card_id VARCHAR(10) NOT NULL,
     ref_transaction UUID NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts.account(id),
     FOREIGN KEY (card_id) REFERENCES accounts.card(number)
