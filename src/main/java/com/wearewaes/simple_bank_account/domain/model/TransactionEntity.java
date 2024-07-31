@@ -8,6 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,39 +18,44 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "transaction", schema = "accounts")
-public record TransactionEntity(
-        @Id @GeneratedValue(strategy = GenerationType.AUTO)
-        UUID id,
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class TransactionEntity {
 
-        @Column(nullable = false)
-        LocalDateTime timestamp,
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-        @Column(nullable = false)
-        String type,
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
 
-        @Column(nullable = false, precision = 10, scale = 2)
-        BigDecimal amount,
+    @Column(nullable = false)
+    private String type;
 
-        @Column(name = "credit_card_fee_amount", precision = 10, scale = 2)
-        BigDecimal creditCardFeeAmount,
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal amount;
 
-        @Column(name = "credit_card_fee", precision = 5, scale = 2)
-        BigDecimal creditCardFee,
+    @Column(name = "credit_card_fee_amount", precision = 10, scale = 2)
+    private BigDecimal creditCardFeeAmount;
 
-        @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
-        BigDecimal totalAmount,
+    @Column(name = "credit_card_fee", precision = 5, scale = 2)
+    private BigDecimal creditCardFee;
 
-        @ManyToOne
-        @JoinColumn(name = "account_id", nullable = false)
-        AccountEntity accountEntity,
+    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalAmount;
 
-        @Column(name = "account_balance", nullable = false, precision = 10, scale = 2)
-        BigDecimal accountBalance,
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private AccountEntity account;
 
-        @ManyToOne
-        @JoinColumn(name = "card_id", nullable = false)
-        CardEntity cardEntity,
+    @Column(name = "account_balance", nullable = false, precision = 10, scale = 2)
+    private BigDecimal accountBalance;
 
-        @Column(name = "ref_transaction", nullable = false)
-        UUID refTransaction
-) {}
+    @ManyToOne
+    @JoinColumn(name = "card_id", nullable = false)
+    private CardEntity card;
+
+    @Column(name = "ref_transaction", nullable = false)
+    private UUID refTransaction;
+}
