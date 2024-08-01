@@ -35,7 +35,7 @@ class TransactionsControllerIT extends TestContainersSetUp {
 
     @Test
     void testDepositMoneyToAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
-        var newAccount = generateNewAccount(false, "Hfid*(&80709");
+        var newAccount = generateNewAccount(false, "Hfid*(&8070fhjdsiah");
 
         var newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -85,7 +85,7 @@ class TransactionsControllerIT extends TestContainersSetUp {
 
     @Test
     void testWithdrawMoneyWithDebitCardFromAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
-        var newAccount = generateNewAccount(false, "Hfid*(&80709");
+        var newAccount = generateNewAccount(false, "Hfi0709gfdsuoadhsahbfv");
 
         var newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -147,7 +147,7 @@ class TransactionsControllerIT extends TestContainersSetUp {
 
     @Test
     void testWithdrawMoneyWithCreditFromAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
-        var newAccount = generateNewAccount(true, "Hfid*(&80709");
+        var newAccount = generateNewAccount(true, "BHDCsaud*(&80709");
 
         var newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -209,8 +209,8 @@ class TransactionsControllerIT extends TestContainersSetUp {
 
     @Test
     void testTransferMoneyWithDebitCardFromAccountAndVerifyIfAccountsBalancesAreUpdated() throws Exception {
-        var newAccountOrigin = generateNewAccount(false, "Hfid*(&80709");
-        var newAccountDestination = generateNewAccount(false, "Hfid*(&80708");
+        var newAccountOrigin = generateNewAccount(false, "Hfi&*(TGY&80709");
+        var newAccountDestination = generateNewAccount(false, "Hfi*()&80708");
 
         var newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
         var newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -298,8 +298,8 @@ class TransactionsControllerIT extends TestContainersSetUp {
 
     @Test
     void testTransferMoneyWithCreditCardFromAccountAndVerifyIfAccountsBalancesAreUpdated() throws Exception {
-        var newAccountOrigin = generateNewAccount(true, "Hfid*(&80709");
-        var newAccountDestination = generateNewAccount(false, "Hfid*(&80708");
+        var newAccountOrigin = generateNewAccount(true, "HfiXFH709");
+        var newAccountDestination = generateNewAccount(false, "HfiNJKNL0708");
 
         var newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
         var newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -387,8 +387,8 @@ class TransactionsControllerIT extends TestContainersSetUp {
 
     @Test
     void testTransferMoneyWithCreditBadRequestWrongCardDetailsNoBalanceUpdateAfterBadRequest() throws Exception {
-        var newAccountOrigin = generateNewAccount(true, "Hfid*(&80709");
-        var newAccountDestination = generateNewAccount(false, "Hfid*(&80708");
+        var newAccountOrigin = generateNewAccount(true, "Hfi%&*09");
+        var newAccountDestination = generateNewAccount(false, "HVGHJd*(&80708");
 
         var newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
         var newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -477,8 +477,8 @@ class TransactionsControllerIT extends TestContainersSetUp {
 
     @Test
     void testTransferMoneyWithDebitBadRequestWrongDestinationAccountNoBalanceUpdateAfterBadRequest() throws Exception {
-        var newAccountOrigin = generateNewAccount(false, "Hfid*(&80709");
-        var newAccountDestination = generateNewAccount(false, "Hfid*(&80708");
+        var newAccountOrigin = generateNewAccount(false, "HfNKJLBJLK&80709");
+        var newAccountDestination = generateNewAccount(false, "HfCRTFT80708");
 
         var newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
         var newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);

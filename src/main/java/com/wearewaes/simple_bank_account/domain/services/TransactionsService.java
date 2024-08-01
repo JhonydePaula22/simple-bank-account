@@ -19,11 +19,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.UUID;
 
 import static com.wearewaes.simple_bank_account.domain.model.mappers.TransactionMappers.generateDebitTransaction;
 import static com.wearewaes.simple_bank_account.domain.model.mappers.TransactionMappers.generateDepositTransaction;
+import static com.wearewaes.simple_bank_account.domain.model.mappers.TransactionMappers.generateNewAccountCreditTransactionDTO;
 import static com.wearewaes.simple_bank_account.domain.model.mappers.TransactionMappers.toTransactionReceiptDTO;
 
 public class TransactionsService {
@@ -71,9 +71,11 @@ public class TransactionsService {
                                                          String destinationAccountNumber) {
         AccountEntity accountEntity = getAccountEntity(accountNumber);
         CardEntity cardEntity = getCardEntity(accountEntity, newAccountDebitTransactionDTO.getCard());
+
         BigDecimal currentAccountBalance = accountEntity.getBalance();
         BigDecimal transactionAmount = BigDecimal.valueOf(newAccountDebitTransactionDTO.getAmount());
-        BigDecimal transactionFee = newAccountDebitTransactionDTO.getCard().getType().equals(CardTypeEnum.DEBIT) ? BigDecimal.ZERO : BigDecimal.ONE;
+        BigDecimal transactionFee = newAccountDebitTransactionDTO.getCard().getType().equals(CardTypeEnum.DEBIT)
+                ? BigDecimal.ZERO : BigDecimal.ONE;
         BigDecimal transactionFeeAmount = percentage(transactionAmount, transactionFee);
         BigDecimal totalTransactionAmount = transactionAmount.add(transactionFeeAmount);
         BigDecimal newAccountBalance = currentAccountBalance.subtract(totalTransactionAmount);
@@ -95,8 +97,8 @@ public class TransactionsService {
             var persistedTransactionEntity = transactionsRepository.save(transactionEntity);
 
             if (transactionType.equals(TransactionTypeEnum.TRANSFER)) {
-                NewAccountCreditTransactionDTO newAccountCreditTransactionDTO = new NewAccountCreditTransactionDTO();
-                newAccountCreditTransactionDTO.setAmount(newAccountDebitTransactionDTO.getAmount());
+                NewAccountCreditTransactionDTO newAccountCreditTransactionDTO =
+                        generateNewAccountCreditTransactionDTO(newAccountDebitTransactionDTO);
                 processCreditTransaction(newAccountCreditTransactionDTO, destinationAccountNumber, transactionReference);
             }
 
@@ -128,6 +130,6 @@ public class TransactionsService {
     }
 
     private static BigDecimal percentage(BigDecimal base, BigDecimal pct){
-        return base.multiply(pct).divide(ONE_HUNDRED, RoundingMode.HALF_UP);
+        return base.multiply(pct).divide(ONE_HUNDRED);
     }
 }

@@ -1,6 +1,7 @@
 package com.wearewaes.simple_bank_account.domain.model.mappers;
 
 import com.wearewaes.model.NewAccountCreditTransactionDTO;
+import com.wearewaes.model.NewAccountDebitTransactionDTO;
 import com.wearewaes.model.TransactionReceiptDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
@@ -66,4 +67,11 @@ public class TransactionMappers {
                 transactionReference
         );
     }
+
+    public static NewAccountCreditTransactionDTO generateNewAccountCreditTransactionDTO(NewAccountDebitTransactionDTO newAccountDebitTransactionDTO) {
+        NewAccountCreditTransactionDTO newAccountCreditTransactionDTO = new NewAccountCreditTransactionDTO();
+        newAccountCreditTransactionDTO.setAmount(newAccountDebitTransactionDTO.getAmount());
+        return newAccountCreditTransactionDTO;
+    }
+
 }
