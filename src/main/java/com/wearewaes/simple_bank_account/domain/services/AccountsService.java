@@ -10,7 +10,6 @@ import com.wearewaes.simple_bank_account.domain.model.exceptions.BusinessExcepti
 import com.wearewaes.simple_bank_account.domain.model.exceptions.InternalErrorException;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
-import jakarta.persistence.PersistenceException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class AccountsService {
         this.cardsServiceFactoryService = cardsServiceFactoryService;
     }
 
-    @Transactional(rollbackFor = {PersistenceException.class})
+    @Transactional(rollbackFor = {RuntimeException.class})
     public AccountDTO createAccount(NewAccountDTO newAccountDTO) {
         AccountHolderEntity persistedAccountHolder = persistAccountHolder(newAccountDTO);
         AccountEntity persistedAccount = persistAccount(persistedAccountHolder);

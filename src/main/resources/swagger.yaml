@@ -286,12 +286,13 @@ components:
     NewAccountDebitTransactionDTO:
       type: object
       properties:
-        cardType:
-          $ref: '#/components/schemas/CardTypeEnum'
+        card:
+          $ref: '#/components/schemas/CardDTO'
         amount:
           type: number
           format: double
           example: 100,00
+
 
     NewAccountCreditTransactionDTO:
       type: object

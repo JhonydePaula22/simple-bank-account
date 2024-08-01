@@ -43,8 +43,9 @@ public class SpringConfig {
 
     @Bean
     public TransactionsService transactionsService(TransactionsRepository transactionsRepository,
-                                                   AccountsRepository accountsRepository) {
-        return new TransactionsService(transactionsRepository, accountsRepository);
+                                                   AccountsRepository accountsRepository,
+                                                   CardsRepository cardsRepository) {
+        return new TransactionsService(transactionsRepository, accountsRepository, cardsRepository);
     }
 
     @Bean

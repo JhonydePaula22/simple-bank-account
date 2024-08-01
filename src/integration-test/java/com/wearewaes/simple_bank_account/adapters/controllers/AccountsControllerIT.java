@@ -35,7 +35,7 @@ class AccountsControllerIT extends TestContainersSetUp {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void createAccountWithoutCreditCard() throws Exception {
+    void testCreateAccountWithoutCreditCard() throws Exception {
         var newAccount = generateNewAccount(false, "Hfid*(&80709");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
@@ -58,7 +58,7 @@ class AccountsControllerIT extends TestContainersSetUp {
     }
 
     @Test
-    void createAccountWithCreditCard() throws Exception {
+    void testCreateAccountWithCreditCard() throws Exception {
         var newAccount = generateNewAccount(true, "&*(hGUYFy8");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
@@ -82,7 +82,7 @@ class AccountsControllerIT extends TestContainersSetUp {
     }
 
     @Test
-    void badRequestCreateAccountWithUserAlreadyRegistered() throws Exception {
+    void testBadRequestCreateAccountWithUserAlreadyRegistered() throws Exception {
         var newAccount = generateNewAccount(false, "12345");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
@@ -109,7 +109,7 @@ class AccountsControllerIT extends TestContainersSetUp {
     }
 
     @Test
-    void getAccount() throws Exception {
+    void testGetAccount() throws Exception {
         var newAccount = generateNewAccount(true, "(&ˆTGY&F&GYIO");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
@@ -138,7 +138,7 @@ class AccountsControllerIT extends TestContainersSetUp {
     }
 
     @Test
-    void getAllAccountsBalance() throws Exception {
+    void testGetAllAccountsBalance() throws Exception {
         var newAccount = generateNewAccount(true, "GKUYTÎˆ*GF%&");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
@@ -169,7 +169,7 @@ class AccountsControllerIT extends TestContainersSetUp {
     }
 
     @Test
-    void getAccountBadRequestWrongAccountNumber() throws Exception {
+    void testGetAccountBadRequestWrongAccountNumber() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("account_number", "invalid_acc_number")

@@ -29,7 +29,7 @@ class TransactionsControllerIT extends TestContainersSetUp {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void depositMoneyToAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
+    void testDepositMoneyToAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
         var newAccount = generateNewAccount(false, "Hfid*(&80709");
 
         var newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
