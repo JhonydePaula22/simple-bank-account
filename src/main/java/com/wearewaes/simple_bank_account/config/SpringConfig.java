@@ -28,8 +28,10 @@ public class SpringConfig {
     }
 
     @Bean
-    public TransactionsService transactionsService(TransactionsRepository transactionsRepository) {
-        return new TransactionsService(transactionsRepository);
+    @DependsOn("accountsService")
+    public TransactionsService transactionsService(TransactionsRepository transactionsRepository,
+                                                   AccountsRepository accountsRepository) {
+        return new TransactionsService(transactionsRepository, accountsRepository);
     }
 
     @Bean

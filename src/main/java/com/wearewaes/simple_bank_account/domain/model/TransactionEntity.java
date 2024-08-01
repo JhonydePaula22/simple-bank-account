@@ -2,6 +2,8 @@ package com.wearewaes.simple_bank_account.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +33,8 @@ public class TransactionEntity {
     private LocalDateTime timestamp;
 
     @Column(nullable = false)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TransactionTypeEnum type;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
@@ -53,7 +56,7 @@ public class TransactionEntity {
     private BigDecimal accountBalance;
 
     @ManyToOne
-    @JoinColumn(name = "card_id", nullable = false)
+    @JoinColumn(name = "card_id")
     private CardEntity card;
 
     @Column(name = "ref_transaction", nullable = false)

@@ -51,7 +51,7 @@ CREATE TABLE accounts.transaction (
     total_amount NUMERIC(10, 2) NOT NULL,
     account_id UUID NOT NULL,
     account_balance NUMERIC(10, 2) NOT NULL CHECK (account_balance >= 0) DEFAULT 0,
-    card_id VARCHAR(10) NOT NULL,
+    card_id VARCHAR(10),
     ref_transaction UUID NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts.account(id),
     FOREIGN KEY (card_id) REFERENCES accounts.card(number)

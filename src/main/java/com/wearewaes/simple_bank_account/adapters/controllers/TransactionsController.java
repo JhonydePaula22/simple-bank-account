@@ -19,7 +19,8 @@ public class TransactionsController implements TransactionsApi {
 
     @Override
     public ResponseEntity<TransactionReceiptDTO> createDepositTransaction(String accountNumber, NewAccountCreditTransactionDTO newAccountCreditTransactionDTO) {
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.ok(
+                transactionsCommands.processDepositTransaction(newAccountCreditTransactionDTO, accountNumber));
     }
 
     @Override
