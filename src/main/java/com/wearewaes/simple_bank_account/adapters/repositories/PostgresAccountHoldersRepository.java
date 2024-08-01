@@ -7,19 +7,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostgresAccountHoldersRepository implements AccountHoldersRepository {
 
-    private final SpringJDBCAccountHoldersRepository springJDBCAccountHoldersRepository;
+    private final SpringJPAAccountHoldersRepository springJPAAccountHoldersRepository;
 
-    public PostgresAccountHoldersRepository(SpringJDBCAccountHoldersRepository springJDBCAccountHoldersRepository) {
-        this.springJDBCAccountHoldersRepository = springJDBCAccountHoldersRepository;
+    public PostgresAccountHoldersRepository(SpringJPAAccountHoldersRepository springJPAAccountHoldersRepository) {
+        this.springJPAAccountHoldersRepository = springJPAAccountHoldersRepository;
     }
 
     @Override
     public AccountHolderEntity saveAccountHolder(AccountHolderEntity accountHolderEntity) {
-        return springJDBCAccountHoldersRepository.save(accountHolderEntity);
+        return springJPAAccountHoldersRepository.save(accountHolderEntity);
     }
 
     @Override
     public int countByIdentification(String identification) {
-        return springJDBCAccountHoldersRepository.countByIdentification(identification);
+        return springJPAAccountHoldersRepository.countByIdentification(identification);
     }
 }

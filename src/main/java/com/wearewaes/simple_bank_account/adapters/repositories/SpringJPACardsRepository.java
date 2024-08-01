@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface SpringJDDBCCardsRepository extends CrudRepository<CardEntity, String> {
+public interface SpringJPACardsRepository extends CrudRepository<CardEntity, String> {
 
     List<CardEntity> findByAccount(AccountEntity accountEntity);
 }

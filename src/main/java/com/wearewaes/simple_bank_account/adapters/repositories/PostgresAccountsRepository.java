@@ -12,27 +12,27 @@ import java.util.Optional;
 @Component
 public class PostgresAccountsRepository implements AccountsRepository, AccountsPaginatedRepository {
 
-    private final SpringJDBCAccountsRepository springJDBCAccountsRepository;
-    private final SpringJDBCAccountsPaginatedRepository springJDBCAccountsPaginatedRepository;
+    private final SpringJPAAccountsRepository springJPAAccountsRepository;
+    private final SpringJPAAccountsPaginatedRepository springJPAAccountsPaginatedRepository;
 
-    public PostgresAccountsRepository(SpringJDBCAccountsRepository springJDBCAccountsRepository,
-                                      SpringJDBCAccountsPaginatedRepository springJDBCAccountsPaginatedRepository) {
-        this.springJDBCAccountsRepository = springJDBCAccountsRepository;
-        this.springJDBCAccountsPaginatedRepository = springJDBCAccountsPaginatedRepository;
+    public PostgresAccountsRepository(SpringJPAAccountsRepository springJPAAccountsRepository,
+                                      SpringJPAAccountsPaginatedRepository springJPAAccountsPaginatedRepository) {
+        this.springJPAAccountsRepository = springJPAAccountsRepository;
+        this.springJPAAccountsPaginatedRepository = springJPAAccountsPaginatedRepository;
     }
 
     @Override
     public AccountEntity saveAccount(AccountEntity accountEntity) {
-        return springJDBCAccountsRepository.save(accountEntity);
+        return springJPAAccountsRepository.save(accountEntity);
     }
 
     @Override
     public Optional<AccountEntity> findByNumber(String accountNumber) {
-        return springJDBCAccountsRepository.findByNumber(accountNumber);
+        return springJPAAccountsRepository.findByNumber(accountNumber);
     }
 
     @Override
     public Page<AccountEntity> findAll(PageRequest pageRequest) {
-        return springJDBCAccountsPaginatedRepository.findAll(pageRequest);
+        return springJPAAccountsPaginatedRepository.findAll(pageRequest);
     }
 }

@@ -4,9 +4,11 @@ import com.wearewaes.model.AccountDTO;
 import com.wearewaes.model.AccountHolderDTO;
 import com.wearewaes.model.CardDTO;
 import com.wearewaes.model.NewAccountDTO;
+import com.wearewaes.model.PageDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
+import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -57,5 +59,16 @@ public class AccountMappers {
                 accountNumber,
                 BigDecimal.ZERO
         );
+    }
+
+    public static PageDTO toPageDto(Page<AccountEntity> accountEntities) {
+        PageDTO pageDTO = new PageDTO();
+        pageDTO.setFirst(accountEntities.isFirst());
+        pageDTO.setLast(accountEntities.isLast());
+        pageDTO.setNumber(accountEntities.getNumber());
+        pageDTO.setTotalPages(accountEntities.getTotalPages());
+        pageDTO.setTotalElements(accountEntities.getTotalElements());
+        pageDTO.setSize(accountEntities.getSize());
+        return pageDTO;
     }
 }

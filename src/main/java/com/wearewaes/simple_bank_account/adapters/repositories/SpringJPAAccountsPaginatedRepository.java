@@ -5,5 +5,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.UUID;
 
-public interface SpringJDBCAccountsPaginatedRepository extends PagingAndSortingRepository<AccountEntity, UUID> {
+public interface SpringJPAAccountsPaginatedRepository extends PagingAndSortingRepository<AccountEntity, UUID> {
 }

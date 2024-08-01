@@ -4,23 +4,23 @@ import com.wearewaes.api.TransactionsApi;
 import com.wearewaes.model.NewAccountCreditTransactionDTO;
 import com.wearewaes.model.NewAccountDebitTransactionDTO;
 import com.wearewaes.model.TransactionReceiptDTO;
-import com.wearewaes.simple_bank_account.domain.commands.TransactionsCommands;
+import com.wearewaes.simple_bank_account.domain.services.TransactionsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TransactionsController implements TransactionsApi {
 
-    private final TransactionsCommands transactionsCommands;
+    private final TransactionsService transactionsService;
 
-    public TransactionsController(TransactionsCommands transactionsCommands) {
-        this.transactionsCommands = transactionsCommands;
+    public TransactionsController(TransactionsService transactionsService) {
+        this.transactionsService = transactionsService;
     }
 
     @Override
     public ResponseEntity<TransactionReceiptDTO> createDepositTransaction(String accountNumber, NewAccountCreditTransactionDTO newAccountCreditTransactionDTO) {
         return ResponseEntity.ok(
-                transactionsCommands.processDepositTransaction(newAccountCreditTransactionDTO, accountNumber));
+                transactionsService.processDepositTransaction(newAccountCreditTransactionDTO, accountNumber));
     }
 
     @Override

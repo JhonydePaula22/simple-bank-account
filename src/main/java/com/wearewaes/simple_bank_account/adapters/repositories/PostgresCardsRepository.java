@@ -10,19 +10,19 @@ import java.util.List;
 @Component
 public class PostgresCardsRepository implements CardsRepository {
 
-    private final SpringJDDBCCardsRepository springJDDBCCardsRepository;
+    private final SpringJPACardsRepository springJPACardsRepository;
 
-    public PostgresCardsRepository(SpringJDDBCCardsRepository springJDDBCCardsRepository) {
-        this.springJDDBCCardsRepository = springJDDBCCardsRepository;
+    public PostgresCardsRepository(SpringJPACardsRepository springJPACardsRepository) {
+        this.springJPACardsRepository = springJPACardsRepository;
     }
 
     @Override
     public CardEntity saveCard(CardEntity cardEntity) {
-        return springJDDBCCardsRepository.save(cardEntity);
+        return springJPACardsRepository.save(cardEntity);
     }
 
     @Override
     public List<CardEntity> findCardsByAccount(AccountEntity accountEntity) {
-        return springJDDBCCardsRepository.findByAccount(accountEntity);
+        return springJPACardsRepository.findByAccount(accountEntity);
     }
 }

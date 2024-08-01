@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class PostgresTransactionsRepository implements TransactionsRepository {
 
-    private final SpringJDBCTransactionsRepository springJDBCTransactionsRepository;
+    private final SpringJPATransactionsRepository springJPATransactionsRepository;
 
-    public PostgresTransactionsRepository(SpringJDBCTransactionsRepository springJDBCTransactionsRepository) {
-        this.springJDBCTransactionsRepository = springJDBCTransactionsRepository;
+    public PostgresTransactionsRepository(SpringJPATransactionsRepository springJPATransactionsRepository) {
+        this.springJPATransactionsRepository = springJPATransactionsRepository;
     }
 
     @Override
     public TransactionEntity depositMoneyIntoAccount(TransactionEntity transactionEntity) {
-        return springJDBCTransactionsRepository.save(transactionEntity);
+        return springJPATransactionsRepository.save(transactionEntity);
     }
 }

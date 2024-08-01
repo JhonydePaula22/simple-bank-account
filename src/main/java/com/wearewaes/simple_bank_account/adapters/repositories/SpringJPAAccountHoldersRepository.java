@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
-public interface SpringJDBCAccountHoldersRepository extends CrudRepository<AccountHolderEntity, UUID> {
+public interface SpringJPAAccountHoldersRepository extends CrudRepository<AccountHolderEntity, UUID> {
 
     int countByIdentification(String identification);
 }
