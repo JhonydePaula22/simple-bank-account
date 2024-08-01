@@ -77,8 +77,8 @@ public class TransactionsService {
         BigDecimal transactionFeeAmount = percentage(transactionAmount, transactionFee);
         BigDecimal totalTransactionAmount = transactionAmount.add(transactionFeeAmount);
         BigDecimal newAccountBalance = currentAccountBalance.subtract(totalTransactionAmount);
-        // checking if new account balance is 0 or positive
-        if (newAccountBalance.signum() > ANY_NEGATIVE_NUMBER) {
+
+        if (isNewAccountBalancePositive(newAccountBalance)) {
             UUID transactionReference = UUID.randomUUID();
             TransactionEntity transactionEntity = generateDebitTransaction(
                     transactionType,
@@ -113,10 +113,6 @@ public class TransactionsService {
                 .orElseThrow(() -> new BadRequestException("Card data is invalid. Please check and try again."));
     }
 
-    private static BigDecimal percentage(BigDecimal base, BigDecimal pct){
-        return base.multiply(pct).divide(ONE_HUNDRED, RoundingMode.HALF_UP);
-    }
-
     private AccountEntity getAccountEntity(String accountNumber) {
         return accountsRepository.findByNumber(accountNumber).orElseThrow(
                 () -> new AccountNotFoundException("The account number informed is not a valid one."));
@@ -124,5 +120,14 @@ public class TransactionsService {
 
     private void saveAccountEntityChanges(AccountEntity accountEntity) {
         accountsRepository.saveAccount(accountEntity);
+    }
+
+    private static boolean isNewAccountBalancePositive(BigDecimal newAccountBalance) {
+        // checking if new account balance is 0 or positive
+        return newAccountBalance.signum() > ANY_NEGATIVE_NUMBER;
+    }
+
+    private static BigDecimal percentage(BigDecimal base, BigDecimal pct){
+        return base.multiply(pct).divide(ONE_HUNDRED, RoundingMode.HALF_UP);
     }
 }
