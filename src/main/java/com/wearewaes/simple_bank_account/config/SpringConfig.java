@@ -5,6 +5,7 @@ import com.wearewaes.simple_bank_account.domain.commands.TransactionsCommands;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
+import com.wearewaes.simple_bank_account.domain.ports.repositories.TransactionsRepository;
 import com.wearewaes.simple_bank_account.domain.services.AccountsService;
 import com.wearewaes.simple_bank_account.domain.services.TransactionsService;
 import org.springframework.context.annotation.Bean;
@@ -27,8 +28,8 @@ public class SpringConfig {
     }
 
     @Bean
-    public TransactionsService transactionsService() {
-        return new TransactionsService();
+    public TransactionsService transactionsService(TransactionsRepository transactionsRepository) {
+        return new TransactionsService(transactionsRepository);
     }
 
     @Bean
