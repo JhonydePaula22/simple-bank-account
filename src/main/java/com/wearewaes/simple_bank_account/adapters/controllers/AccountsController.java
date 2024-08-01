@@ -4,7 +4,7 @@ import com.wearewaes.api.AccountsApi;
 import com.wearewaes.model.AccountDTO;
 import com.wearewaes.model.AccountsBalanceDTO;
 import com.wearewaes.model.NewAccountDTO;
-import com.wearewaes.simple_bank_account.domain.commands.AccountCommands;
+import com.wearewaes.simple_bank_account.domain.commands.AccountsCommands;
 import com.wearewaes.simple_bank_account.domain.model.exceptions.AccountNotFoundException;
 import com.wearewaes.simple_bank_account.domain.model.exceptions.BusinessException;
 import com.wearewaes.simple_bank_account.domain.model.exceptions.InternalErrorException;
@@ -18,27 +18,27 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestController
-public class AccountController implements AccountsApi {
+public class AccountsController implements AccountsApi {
 
-    private final AccountCommands accountCommands;
+    private final AccountsCommands accountsCommands;
 
-    public AccountController(AccountCommands accountCommands) {
-        this.accountCommands = accountCommands;
+    public AccountsController(AccountsCommands accountsCommands) {
+        this.accountsCommands = accountsCommands;
     }
 
     @Override
     public ResponseEntity<AccountDTO> createAccount(NewAccountDTO newAccountDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountCommands.createAccount(newAccountDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountsCommands.createAccount(newAccountDTO));
     }
 
     @Override
     public ResponseEntity<AccountDTO> getAccount(String accountNumber) {
-        return ResponseEntity.ok(accountCommands.getAccount(accountNumber));
+        return ResponseEntity.ok(accountsCommands.getAccount(accountNumber));
     }
 
     @Override
     public ResponseEntity<AccountsBalanceDTO> getAllAccountsBalance(Integer offset, Integer limit) {
-        return ResponseEntity.ok(accountCommands.getAllAccountsBalance(offset, limit));
+        return ResponseEntity.ok(accountsCommands.getAllAccountsBalance(offset, limit));
     }
 
     @ExceptionHandler(value = AccountNotFoundException.class)

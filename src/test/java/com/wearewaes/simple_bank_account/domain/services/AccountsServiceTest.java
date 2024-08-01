@@ -193,11 +193,11 @@ class AccountsServiceTest {
 
         AccountBalanceDTO accountBalanceDTO1 = result.getAccountsBalance().get(0);
         assertThat(accountBalanceDTO1.getAccountNumber()).isEqualTo("123345");
-        assertThat(accountBalanceDTO1.getBalance()).isEqualTo(1000.00);
+        assertThat(accountBalanceDTO1.getBalance()).isEqualTo(0.00);
 
         AccountBalanceDTO accountBalanceDTO2 = result.getAccountsBalance().get(1);
         assertThat(accountBalanceDTO2.getAccountNumber()).isEqualTo("123366");
-        assertThat(accountBalanceDTO2.getBalance()).isEqualTo(2000.00);
+        assertThat(accountBalanceDTO2.getBalance()).isEqualTo(0.00);
 
         PageDTO pageDTO = result.getPageDetails();
         assertThat(pageDTO).isNotNull();

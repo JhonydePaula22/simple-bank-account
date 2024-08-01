@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AccountControllerIT extends TestContainersSetUp {
+class AccountsControllerIT extends TestContainersSetUp {
 
     @Autowired
     private MockMvc mockMvc;

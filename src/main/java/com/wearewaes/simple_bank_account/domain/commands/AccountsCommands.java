@@ -5,11 +5,11 @@ import com.wearewaes.model.AccountsBalanceDTO;
 import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.simple_bank_account.domain.services.AccountsService;
 
-public class AccountCommands {
+public class AccountsCommands {
 
     private final AccountsService accountsService;
 
-    public AccountCommands(AccountsService accountsService) {
+    public AccountsCommands(AccountsService accountsService) {
         this.accountsService = accountsService;
     }
 
