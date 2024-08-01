@@ -26,14 +26,14 @@ public class AccountsService {
     public static final Random RANDOM = new Random();
     private final AccountsRepository accountsRepository;
     private final AccountHoldersRepository accountHoldersRepository;
-    private final CardsServiceFactory cardsServiceFactory;
+    private final CardsServiceFactoryService cardsServiceFactoryService;
 
     public AccountsService(AccountsRepository accountsRepository,
                            AccountHoldersRepository accountHoldersRepository,
-                           CardsServiceFactory cardsServiceFactory) {
+                           CardsServiceFactoryService cardsServiceFactoryService) {
         this.accountsRepository = accountsRepository;
         this.accountHoldersRepository = accountHoldersRepository;
-        this.cardsServiceFactory = cardsServiceFactory;
+        this.cardsServiceFactoryService = cardsServiceFactoryService;
     }
 
     @Transactional(rollbackFor = {PersistenceException.class})
@@ -64,11 +64,11 @@ public class AccountsService {
 
     private List<CardEntity> generateCards(AccountEntity accountEntity, boolean creditCard) {
         List<CardEntity> cards = new ArrayList<>();
-        CardEntity debitCardEntity = cardsServiceFactory.getCardGenerator(CardTypeEnum.DEBIT).generateCard(accountEntity);
+        CardEntity debitCardEntity = cardsServiceFactoryService.getCardGenerator(CardTypeEnum.DEBIT).generateCard(accountEntity);
         cards.add(debitCardEntity);
 
         if (creditCard) {
-            CardEntity creditCardEntity = cardsServiceFactory.getCardGenerator(CardTypeEnum.CREDIT).generateCard(accountEntity);
+            CardEntity creditCardEntity = cardsServiceFactoryService.getCardGenerator(CardTypeEnum.CREDIT).generateCard(accountEntity);
             cards.add(creditCardEntity);
         }
         return cards;

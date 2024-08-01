@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 class AccountsServiceTest {
     private AccountsRepository accountsRepository;
     private AccountHoldersRepository accountHoldersRepository;
-    private CardsServiceFactory cardsServiceFactory;
+    private CardsServiceFactoryService cardsServiceFactoryService;
     private AccountsService accountsService;
     private CreateDebitCardService createDebitCardService;
     private CreateCreditCardService createCreditCardService;
@@ -35,10 +35,10 @@ class AccountsServiceTest {
     void setUp() {
         accountsRepository = Mockito.mock(AccountsRepository.class);
         accountHoldersRepository = Mockito.mock(AccountHoldersRepository.class);
-        cardsServiceFactory = Mockito.mock(CardsServiceFactory.class);
+        cardsServiceFactoryService = Mockito.mock(CardsServiceFactoryService.class);
         createDebitCardService = Mockito.mock(CreateDebitCardService.class);
         createCreditCardService = Mockito.mock(CreateCreditCardService.class);
-        accountsService = new AccountsService(accountsRepository, accountHoldersRepository, cardsServiceFactory);
+        accountsService = new AccountsService(accountsRepository, accountHoldersRepository, cardsServiceFactoryService);
     }
 
     @Test
@@ -69,9 +69,9 @@ class AccountsServiceTest {
                 .thenReturn(persistedAccountHolder);
         when(accountsRepository.saveAccount(any(AccountEntity.class)))
                 .thenReturn(persistedAccount);
-        when(cardsServiceFactory.getCardGenerator(CardTypeEnum.CREDIT))
+        when(cardsServiceFactoryService.getCardGenerator(CardTypeEnum.CREDIT))
                 .thenReturn(createCreditCardService);
-        when(cardsServiceFactory.getCardGenerator(CardTypeEnum.DEBIT))
+        when(cardsServiceFactoryService.getCardGenerator(CardTypeEnum.DEBIT))
                 .thenReturn(createDebitCardService);
 
         when(createCreditCardService.generateCard(persistedAccount)).thenReturn(creditCardEntity);
@@ -99,7 +99,7 @@ class AccountsServiceTest {
 
         verify(accountHoldersRepository).saveAccountHolder(any(AccountHolderEntity.class));
         verify(accountsRepository).saveAccount(any(AccountEntity.class));
-        verify(cardsServiceFactory, times(2)).getCardGenerator(any(CardTypeEnum.class));
+        verify(cardsServiceFactoryService, times(2)).getCardGenerator(any(CardTypeEnum.class));
         verify(createCreditCardService, times(1)).generateCard(any(AccountEntity.class));
         verify(createDebitCardService, times(1)).generateCard(any(AccountEntity.class));
     }

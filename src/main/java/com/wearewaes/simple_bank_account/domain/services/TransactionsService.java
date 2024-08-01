@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.UUID;
+
+import static com.wearewaes.simple_bank_account.domain.model.mappers.TransactionMappers.toTransactionReceiptDTO;
 
 public class TransactionsService {
 
@@ -32,8 +32,23 @@ public class TransactionsService {
     public TransactionReceiptDTO processDepositTransaction(
             NewAccountCreditTransactionDTO newAccountCreditTransactionDTO, String accountNumber) {
         AccountEntity accountEntity = getAccountEntity(accountNumber);
+        TransactionEntity transactionEntity = generateTransactionEntity(newAccountCreditTransactionDTO, accountEntity);
+        saveAccountEntityChanges(accountEntity);
+        var persistedTransactionEntity = transactionsRepository.save(transactionEntity);
+        return toTransactionReceiptDTO(persistedTransactionEntity);
+    }
+
+    private static TransactionEntity generateTransactionEntity(NewAccountCreditTransactionDTO newAccountCreditTransactionDTO, AccountEntity accountEntity) {
         var currentAccountBalance = accountEntity.getBalance();
         var newAccountBalance = currentAccountBalance.add(BigDecimal.valueOf(newAccountCreditTransactionDTO.getAmount()));
+        TransactionEntity transactionEntity = generateTransaction(newAccountCreditTransactionDTO, accountEntity, newAccountBalance);
+        accountEntity.setBalance(newAccountBalance);
+        return transactionEntity;
+    }
+
+    private static TransactionEntity generateTransaction(NewAccountCreditTransactionDTO newAccountCreditTransactionDTO,
+                                                         AccountEntity accountEntity, 
+                                                         BigDecimal newAccountBalance) {
         TransactionEntity transactionEntity = new TransactionEntity(
                 null,
                 LocalDateTime.now(),
@@ -46,14 +61,7 @@ public class TransactionsService {
                 newAccountBalance,
                 null,
                 UUID.randomUUID());
-        accountEntity.setBalance(newAccountBalance);
-        persistAccount(accountEntity);
-        transactionEntity = transactionsRepository.depositMoneyIntoAccount(transactionEntity);
-        TransactionReceiptDTO transactionReceiptDTO = new TransactionReceiptDTO();
-        transactionReceiptDTO.setId(transactionEntity.getId().toString());
-        transactionReceiptDTO.setTimestamp(
-                Date.from(transactionEntity.getTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
-        return transactionReceiptDTO;
+        return transactionEntity;
     }
 
     public AccountEntity getAccountEntity(String accountNumber) {
@@ -61,7 +69,7 @@ public class TransactionsService {
                 () -> new AccountNotFoundException("The account number informed is not a valid one."));
     }
 
-    public void persistAccount(AccountEntity accountEntity) {
+    public void saveAccountEntityChanges(AccountEntity accountEntity) {
         accountsRepository.saveAccount(accountEntity);
     }
 }

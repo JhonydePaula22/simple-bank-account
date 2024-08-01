@@ -14,7 +14,7 @@ public class PostgresTransactionsRepository implements TransactionsRepository {
     }
 
     @Override
-    public TransactionEntity depositMoneyIntoAccount(TransactionEntity transactionEntity) {
+    public TransactionEntity save(TransactionEntity transactionEntity) {
         return springJPATransactionsRepository.save(transactionEntity);
     }
 }

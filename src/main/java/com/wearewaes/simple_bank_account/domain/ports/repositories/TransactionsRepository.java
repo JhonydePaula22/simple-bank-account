@@ -4,5 +4,5 @@ import com.wearewaes.simple_bank_account.domain.model.TransactionEntity;
 
 public interface TransactionsRepository {
 
-    TransactionEntity depositMoneyIntoAccount(TransactionEntity transactionEntity);
+    TransactionEntity save(TransactionEntity transactionEntity);
 }

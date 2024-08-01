@@ -5,7 +5,7 @@ import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepos
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.TransactionsRepository;
 import com.wearewaes.simple_bank_account.domain.services.AccountsService;
-import com.wearewaes.simple_bank_account.domain.services.CardsServiceFactory;
+import com.wearewaes.simple_bank_account.domain.services.CardsServiceFactoryService;
 import com.wearewaes.simple_bank_account.domain.services.CreateCreditCardService;
 import com.wearewaes.simple_bank_account.domain.services.CreateDebitCardService;
 import com.wearewaes.simple_bank_account.domain.services.GetAccountService;
@@ -28,17 +28,17 @@ public class SpringConfig {
 
     @Bean
     @DependsOn({"createDebitCardService", "createCreditCardService"})
-    public CardsServiceFactory cardsFactory(CreateCreditCardService createCreditCardService,
-                                            CreateDebitCardService createDebitCardService) {
-        return new CardsServiceFactory(createDebitCardService, createCreditCardService);
+    public CardsServiceFactoryService cardsFactory(CreateCreditCardService createCreditCardService,
+                                                   CreateDebitCardService createDebitCardService) {
+        return new CardsServiceFactoryService(createDebitCardService, createCreditCardService);
     }
 
     @Bean
     @DependsOn("cardsFactory")
     public AccountsService accountsService(AccountsRepository accountsRepository,
                                            AccountHoldersRepository accountHoldersRepository,
-                                           CardsServiceFactory cardsServiceFactory) {
-        return new AccountsService(accountsRepository, accountHoldersRepository, cardsServiceFactory);
+                                           CardsServiceFactoryService cardsServiceFactoryService) {
+        return new AccountsService(accountsRepository, accountHoldersRepository, cardsServiceFactoryService);
     }
 
     @Bean

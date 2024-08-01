@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class CardsServiceFactoryTest {
+class CardsServiceFactoryServiceTest {
 
     @Mock
     private CreateDebitCardService createDebitCardService;
@@ -20,22 +20,22 @@ class CardsServiceFactoryTest {
     private CreateCreditCardService createCreditCardService;
 
     @InjectMocks
-    private CardsServiceFactory cardsServiceFactory;
+    private CardsServiceFactoryService cardsServiceFactoryService;
 
     @BeforeEach
     void setUp() {
-        cardsServiceFactory = new CardsServiceFactory(createDebitCardService, createCreditCardService);
+        cardsServiceFactoryService = new CardsServiceFactoryService(createDebitCardService, createCreditCardService);
     }
 
     @Test
     void testGetCardGeneratorForDebitCard() {
-        CardGenerator cardGenerator = cardsServiceFactory.getCardGenerator(CardTypeEnum.DEBIT);
+        CardGenerator cardGenerator = cardsServiceFactoryService.getCardGenerator(CardTypeEnum.DEBIT);
         assertEquals(createDebitCardService, cardGenerator);
     }
 
     @Test
     void testGetCardGeneratorForCreditCard() {
-        CardGenerator cardGenerator = cardsServiceFactory.getCardGenerator(CardTypeEnum.CREDIT);
+        CardGenerator cardGenerator = cardsServiceFactoryService.getCardGenerator(CardTypeEnum.CREDIT);
         assertEquals(createCreditCardService, cardGenerator);
     }
 

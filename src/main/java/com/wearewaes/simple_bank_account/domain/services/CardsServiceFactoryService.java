@@ -5,12 +5,12 @@ import com.wearewaes.simple_bank_account.domain.model.exceptions.InternalErrorEx
 
 import java.util.Map;
 
-public class CardsServiceFactory {
+public class CardsServiceFactoryService {
 
     private final Map<CardTypeEnum, CardGenerator> cardGenerators;
 
-    public CardsServiceFactory(CreateDebitCardService createDebitCardService,
-                               CreateCreditCardService createCreditCardService) {
+    public CardsServiceFactoryService(CreateDebitCardService createDebitCardService,
+                                      CreateCreditCardService createCreditCardService) {
         this.cardGenerators = Map.of(
                 CardTypeEnum.CREDIT, createCreditCardService,
                 CardTypeEnum.DEBIT, createDebitCardService);
