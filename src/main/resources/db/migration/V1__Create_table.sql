@@ -7,7 +7,7 @@ CREATE SCHEMA IF NOT EXISTS accounts;
 -- Create the holder table
 CREATE TABLE accounts.holder (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    provided_id VARCHAR(255) NOT NULL,
+    provided_id VARCHAR(255) UNIQUE NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,

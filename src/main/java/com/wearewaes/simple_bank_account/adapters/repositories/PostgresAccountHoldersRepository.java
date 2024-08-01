@@ -17,4 +17,9 @@ public class PostgresAccountHoldersRepository implements AccountHoldersRepositor
     public AccountHolderEntity saveAccountHolder(AccountHolderEntity accountHolderEntity) {
         return springJDBCAccountHoldersRepository.save(accountHolderEntity);
     }
+
+    @Override
+    public int countByIdentification(String identification) {
+        return springJDBCAccountHoldersRepository.countByIdentification(identification);
+    }
 }

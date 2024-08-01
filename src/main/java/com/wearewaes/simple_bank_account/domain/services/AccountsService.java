@@ -8,8 +8,10 @@ import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.model.PageDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
-import com.wearewaes.simple_bank_account.domain.model.exceptions.AccountNotFoundException;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
+import com.wearewaes.simple_bank_account.domain.model.exceptions.AccountNotFoundException;
+import com.wearewaes.simple_bank_account.domain.model.exceptions.BusinessException;
+import com.wearewaes.simple_bank_account.domain.model.exceptions.InternalErrorException;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
@@ -43,12 +45,29 @@ public class AccountsService {
 
     @Transactional(rollbackFor = {PersistenceException.class})
     public AccountDTO createAccount(NewAccountDTO newAccountDTO) {
-        AccountHolderEntity newAccountEntityHolder = toAccountEntityHolder(newAccountDTO);
-        AccountHolderEntity persistedAccountHolder = accountHoldersRepository.saveAccountHolder(newAccountEntityHolder);
-        AccountEntity newAccountEntity = toAccountEntityMapper(persistedAccountHolder, generateBankAccountNumber());
-        AccountEntity persistedAccount = accountsRepository.saveAccount(newAccountEntity);
+        AccountHolderEntity persistedAccountHolder = persistAccountHolder(newAccountDTO);
+        AccountEntity persistedAccount = persistAccount(persistedAccountHolder);
         List<CardEntity> cardEntities = generateCards(persistedAccount, newAccountDTO.getCreditCard());
         return toDtoMapper(persistedAccount, cardEntities);
+    }
+
+    private AccountHolderEntity persistAccountHolder(NewAccountDTO newAccountDTO) {
+        if (accountHoldersRepository.countByIdentification(newAccountDTO.getHolder().getId()) == 0) {
+            AccountHolderEntity newAccountEntityHolder = toAccountEntityHolder(newAccountDTO);
+            return accountHoldersRepository.saveAccountHolder(newAccountEntityHolder);
+        }
+        throw new BusinessException("Failed to persist the user. Please check your data. " +
+                "If you already have an account, you may not create a new one!");
+    }
+
+    private AccountEntity persistAccount(AccountHolderEntity persistedAccountHolder) {
+        try {
+            AccountEntity newAccountEntity = toAccountEntityMapper(persistedAccountHolder, generateBankAccountNumber());
+            return accountsRepository.saveAccount(newAccountEntity);
+        } catch (Exception e) {
+            throw new InternalErrorException("Failed to persist the account. Please try again in a moment!");
+        }
+
     }
 
     public AccountDTO getAccount(String accountNumber) {

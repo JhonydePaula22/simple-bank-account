@@ -40,7 +40,7 @@ class AccountControllerIT extends TestContainersSetUp {
 
     @Test
     void createAccountWithoutCreditCard() throws Exception {
-        var newAccount = generateNewAccount(false);
+        var newAccount = generateNewAccount(false, "Hfid*(&80709");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -63,7 +63,7 @@ class AccountControllerIT extends TestContainersSetUp {
 
     @Test
     void createAccountWithCreditCard() throws Exception {
-        var newAccount = generateNewAccount(true);
+        var newAccount = generateNewAccount(true, "&*(hGUYFy8");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -86,8 +86,35 @@ class AccountControllerIT extends TestContainersSetUp {
     }
 
     @Test
+    void badRequestCreateAccountWithUserAlreadyRegistered() throws Exception {
+        var newAccount = generateNewAccount(false, "12345");
+
+        var dtoJson = objectMapper.writeValueAsString(newAccount);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(dtoJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(dtoJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> {
+                    ProblemDetail response = objectMapper
+                            .readValue(result.getResponse().getContentAsString(), ProblemDetail.class);
+
+                    assertNotNull(response);
+                    assertEquals("Failed to persist the user. Please check your data. " +
+                            "If you already have an account, you may not create a new one!", response.getDetail());
+                    assertEquals(URI.create("/accounts"), response.getInstance());
+                    assertEquals("Invalid request", response.getTitle());
+                });
+    }
+
+    @Test
     void getAccount() throws Exception {
-        var newAccount = generateNewAccount(true);
+        var newAccount = generateNewAccount(true, "(&ˆTGY&F&GYIO");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -114,11 +141,9 @@ class AccountControllerIT extends TestContainersSetUp {
                 });
     }
 
-
-
     @Test
     void getAllAccountsBalance() throws Exception {
-        var newAccount = generateNewAccount(true);
+        var newAccount = generateNewAccount(true, "GKUYTÎˆ*GF%&");
 
         var dtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -149,10 +174,6 @@ class AccountControllerIT extends TestContainersSetUp {
 
     @Test
     void getAccountBadRequestWrongAccountNumber() throws Exception {
-        var newAccount = generateNewAccount(true);
-
-        var dtoJson = objectMapper.writeValueAsString(newAccount);
-
         mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("account_number", "invalid_acc_number")
@@ -165,6 +186,7 @@ class AccountControllerIT extends TestContainersSetUp {
                     assertNotNull(response);
                     assertEquals("The account number informed is not a valid one.", response.getDetail());
                     assertEquals(URI.create("/accounts"), response.getInstance());
+                    assertEquals("Account not found", response.getTitle());
                 });
     }
 
@@ -192,10 +214,10 @@ class AccountControllerIT extends TestContainersSetUp {
         return account;
     }
 
-    private static NewAccountDTO generateNewAccount(boolean creditCard) {
+    private static NewAccountDTO generateNewAccount(boolean creditCard, String identification) {
         NewAccountDTO newAccount = new NewAccountDTO();
         AccountHolderDTO accountHolder = new AccountHolderDTO();
-        accountHolder.setId("123456");
+        accountHolder.setId(identification);
         accountHolder.setFirstName("Jonathan");
         accountHolder.setLastName("de Paula");
         accountHolder.setEmail("jonathan.paula@wearewaes.com");
