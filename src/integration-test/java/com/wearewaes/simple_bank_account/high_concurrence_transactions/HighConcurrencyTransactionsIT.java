@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import static com.wearewaes.simple_bank_account.TestUtils.generateNewAccount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -61,7 +62,6 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
             Random random = new Random();
             initialTotalBalance = accounts.stream().mapToDouble(AccountDTO::getBalance).sum();
 
-            // Submit tasks to executor service
             Future<?>[] futures = new Future[NUM_TRANSACTIONS];
             for (int i = 0; i < NUM_TRANSACTIONS; i++) {
                 futures[i] = executorService.submit(() -> {
@@ -75,12 +75,11 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
                     try {
                         transferMoney(accounts.get(fromIndex), accounts.get(toIndex), amount);
                     } catch (Exception e) {
-                        // Handle exception if necessary (e.g., InsufficientFundsException)
+                        fail();
                     }
                 });
             }
 
-            // Wait for all tasks to complete
             for (Future<?> future : futures) {
                 future.get();
             }
@@ -88,8 +87,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
             executorService.shutdown();
         }
 
-        // Verify that the total balance remains the same
-        assertEquals(initialTotalBalance, getAllAccountsBalanceSum(), 0.01); // Allow for minor floating-point variations
+        assertEquals(initialTotalBalance, getAllAccountsBalanceSum(), 0.01);
     }
 
     private AccountDTO createAccountDTOAndDepositMoney(String identification, Double amount) throws Exception {
