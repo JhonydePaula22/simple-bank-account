@@ -41,6 +41,18 @@ public class ControllerAdvice {
         return ResponseEntity.badRequest().body(problemDetail);
     }
 
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ProblemDetail> handleBadRequestException(Exception exception) {
+        if (exception.getMessage().contains("could not serialize access due to concurrent update")) {
+            ProblemDetail problemDetail =
+                    generateProblemDetail(new InternalErrorException("We could not process your transaction. Try again!"), INTERNAL_SERVER_ERROR, "Internal Server error");
+            return ResponseEntity.badRequest().body(problemDetail);
+        }
+        ProblemDetail problemDetail =
+                generateProblemDetail(exception, BAD_REQUEST, "Invalid data on the request");
+        return ResponseEntity.badRequest().body(problemDetail);
+    }
+
     private static ProblemDetail generateProblemDetail(Exception exception, HttpStatus httpStatus, String title) {
         var problemDetail = ProblemDetail.forStatusAndDetail(httpStatus, exception.getMessage());
         problemDetail.setTitle(title);
