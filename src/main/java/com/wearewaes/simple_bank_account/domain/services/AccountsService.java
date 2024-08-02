@@ -10,6 +10,7 @@ import com.wearewaes.simple_bank_account.domain.model.exceptions.BusinessExcepti
 import com.wearewaes.simple_bank_account.domain.model.exceptions.InternalErrorException;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import static com.wearewaes.simple_bank_account.domain.model.mappers.AccountMapp
 import static com.wearewaes.simple_bank_account.domain.model.mappers.AccountMappers.toAccountEntityMapper;
 import static com.wearewaes.simple_bank_account.domain.model.mappers.AccountMappers.toDtoMapper;
 
+@Slf4j
 public class AccountsService {
 
     public static final Random RANDOM = new Random();
@@ -41,6 +43,7 @@ public class AccountsService {
     public AccountDTO createAccount(NewAccountDTO newAccountDTO) {
         AccountHolderEntity persistedAccountHolder = persistAccountHolder(newAccountDTO);
         AccountEntity persistedAccount = persistAccount(persistedAccountHolder);
+        log.info("Account {} created with success!", persistedAccount.getNumber());
         List<CardEntity> cardEntities = generateCards(persistedAccount, newAccountDTO.getCreditCard());
         return toDtoMapper(persistedAccount, cardEntities, encryptionService);
     }

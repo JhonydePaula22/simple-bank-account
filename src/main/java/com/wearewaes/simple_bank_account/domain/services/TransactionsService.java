@@ -15,6 +15,7 @@ import com.wearewaes.simple_bank_account.domain.model.exceptions.BusinessExcepti
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.TransactionsRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import static com.wearewaes.simple_bank_account.domain.model.mappers.Transaction
 import static com.wearewaes.simple_bank_account.domain.model.mappers.TransactionMappers.generateNewAccountCreditTransactionDTO;
 import static com.wearewaes.simple_bank_account.domain.model.mappers.TransactionMappers.toTransactionReceiptDTO;
 
+@Slf4j
 public class TransactionsService {
 
     public static final int ANY_NEGATIVE_NUMBER = -1;
@@ -62,6 +64,7 @@ public class TransactionsService {
         accountEntity.setBalance(newAccountBalance);
         saveAccountEntityChanges(accountEntity);
         TransactionEntity persistedTransactionEntity = transactionsRepository.save(transactionEntity);
+        logTransaction(transactionEntity);
         return toTransactionReceiptDTO(persistedTransactionEntity);
     }
 
@@ -104,6 +107,7 @@ public class TransactionsService {
                 processCreditTransaction(newAccountCreditTransactionDTO, destinationAccountNumber, transactionReference);
             }
 
+            logTransaction(transactionEntity);
             return toTransactionReceiptDTO(persistedTransactionEntity);
         }
         throw new BusinessException("Your account does not have enough funds to complete this operation.");
@@ -138,5 +142,12 @@ public class TransactionsService {
 
     private static BigDecimal percentage(BigDecimal base, BigDecimal pct) {
         return base.multiply(pct).divide(ONE_HUNDRED);
+    }
+
+    private static void logTransaction(TransactionEntity transactionEntity) {
+        log.info("Transaction persisted: {}, Account: {}, Type: {}",
+                transactionEntity.getRefTransaction(),
+                transactionEntity.getAccount().getNumber(),
+                transactionEntity.getType());
     }
 }

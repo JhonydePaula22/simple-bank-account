@@ -5,6 +5,7 @@ import com.wearewaes.simple_bank_account.domain.model.exceptions.AccountNotFound
 import com.wearewaes.simple_bank_account.domain.model.exceptions.BadRequestException;
 import com.wearewaes.simple_bank_account.domain.model.exceptions.BusinessException;
 import com.wearewaes.simple_bank_account.domain.model.exceptions.InternalErrorException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
+@Slf4j
 public class ControllerAdvice {
 
     @ExceptionHandler(value = AccountNotFoundException.class)
@@ -45,7 +47,9 @@ public class ControllerAdvice {
     public ResponseEntity<ProblemDetail> handleBadRequestException(Exception exception) {
         if (exception.getMessage().contains("could not serialize access due to concurrent update")) {
             ProblemDetail problemDetail =
-                    generateProblemDetail(new InternalErrorException("We could not process your transaction. Try again!"), INTERNAL_SERVER_ERROR, "Internal Server error");
+                    generateProblemDetail(
+                            new InternalErrorException("We could not process your transaction. Try again!"),
+                            INTERNAL_SERVER_ERROR, "Internal Server error");
             return ResponseEntity.badRequest().body(problemDetail);
         }
         ProblemDetail problemDetail =
@@ -54,8 +58,14 @@ public class ControllerAdvice {
     }
 
     private static ProblemDetail generateProblemDetail(Exception exception, HttpStatus httpStatus, String title) {
+        logException(exception, httpStatus);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(httpStatus, exception.getMessage());
         problemDetail.setTitle(title);
         return problemDetail;
+    }
+
+    private static void logException(Exception exception, HttpStatus httpStatus) {
+        log.error("Error message: {}, Stacktrace: {}, HttpStatus: {}",
+                exception.getMessage(), exception.getStackTrace(), httpStatus);
     }
 }
