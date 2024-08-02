@@ -8,6 +8,7 @@ import com.wearewaes.model.PageDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
+import com.wearewaes.simple_bank_account.domain.services.EncryptionService;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class AccountMappers {
 
-    public static AccountDTO toDtoMapper(AccountEntity accountEntity, List<CardEntity> cardEntities) {
+    public static AccountDTO toDtoMapper(AccountEntity accountEntity, List<CardEntity> cardEntities, EncryptionService encryptionService) {
         AccountHolderDTO accountHolderDTO = new AccountHolderDTO();
         accountHolderDTO.setId(accountEntity.getHolder().getIdentification());
         accountHolderDTO.setFirstName(accountEntity.getHolder().getFirstName());
@@ -31,9 +32,9 @@ public class AccountMappers {
         accountDTO.setCards(cardEntities.stream().map(
                 cardEntity -> {
                     CardDTO cardDTO = new CardDTO();
-                    cardDTO.setNumber(cardEntity.getNumber().toString());
+                    cardDTO.setNumber(encryptionService.decrypt(cardEntity.getNumber().toString()));
                     cardDTO.setType(cardEntity.getType());
-                    cardDTO.setSecurityCode(cardEntity.getCvv());
+                    cardDTO.setSecurityCode(encryptionService.decrypt(cardEntity.getCvv()));
                     return cardDTO;
                 }
         ).toList());

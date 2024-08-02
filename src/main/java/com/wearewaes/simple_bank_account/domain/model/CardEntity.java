@@ -23,7 +23,7 @@ public class CardEntity{
         @Id
         private String number;
 
-        @Column(nullable = false, length = 4)
+        @Column(nullable = false)
         private String cvv;
 
         @Column(nullable = false)

@@ -2,7 +2,7 @@ package com.wearewaes.simple_bank_account.adapters.controllers;
 
 import com.wearewaes.model.AccountDTO;
 import com.wearewaes.model.AccountsBalanceDTO;
-import com.wearewaes.simple_bank_account.TestContainersSetUp;
+import com.wearewaes.simple_bank_account.TestSetup;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AccountsControllerIT extends TestContainersSetUp {
+class AccountsControllerIT extends TestSetup {
 
     @Autowired
     private MockMvc mockMvc;

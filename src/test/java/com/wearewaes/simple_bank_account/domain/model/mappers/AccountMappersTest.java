@@ -8,6 +8,7 @@ import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.simple_bank_account.domain.model.AccountEntity;
 import com.wearewaes.simple_bank_account.domain.model.AccountHolderEntity;
 import com.wearewaes.simple_bank_account.domain.model.CardEntity;
+import com.wearewaes.simple_bank_account.domain.services.EncryptionService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -17,6 +18,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AccountMappersTest {
+    private EncryptionService encryptionService =
+            new EncryptionService("5lyi1fhGSeoBrI0+qERnWBUJmitWJ9IX3GVCYqANmt4=");
+
     @Test
     void testToDtoMapper() {
         // Setup
@@ -27,13 +31,14 @@ class AccountMappersTest {
                 UUID.randomUUID(), holderEntity, "12345", BigDecimal.valueOf(1000.50)
         );
 
-        CardEntity cardEntity1 = new CardEntity("1", "123", CardTypeEnum.DEBIT, accountEntity );
-        CardEntity cardEntity2 = new CardEntity("2", "321", CardTypeEnum.CREDIT, accountEntity );
+        CardEntity cardEntity1 = new CardEntity(encryptionService.encrypt("1"), encryptionService.encrypt("123"), CardTypeEnum.DEBIT, accountEntity );
+        CardEntity cardEntity2 = new CardEntity(encryptionService.encrypt("2"), encryptionService.encrypt("321"), CardTypeEnum.CREDIT, accountEntity );
 
         List<CardEntity> cardEntities = List.of(cardEntity1, cardEntity2);
 
+
         // Execute
-        AccountDTO result = AccountMappers.toDtoMapper(accountEntity, cardEntities);
+        AccountDTO result = AccountMappers.toDtoMapper(accountEntity, cardEntities, encryptionService);
 
         // Verify
         AccountHolderDTO holderDTO = result.getHolder();

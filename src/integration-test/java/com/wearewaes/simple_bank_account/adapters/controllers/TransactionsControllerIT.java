@@ -5,7 +5,7 @@ import com.wearewaes.model.CardTypeEnum;
 import com.wearewaes.model.NewAccountCreditTransactionDTO;
 import com.wearewaes.model.NewAccountDebitTransactionDTO;
 import com.wearewaes.model.TransactionReceiptDTO;
-import com.wearewaes.simple_bank_account.TestContainersSetUp;
+import com.wearewaes.simple_bank_account.TestSetup;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class TransactionsControllerIT extends TestContainersSetUp {
+class TransactionsControllerIT extends TestSetup {
 
     @Autowired
     private MockMvc mockMvc;

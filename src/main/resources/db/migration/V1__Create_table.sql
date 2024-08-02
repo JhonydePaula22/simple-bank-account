@@ -31,8 +31,8 @@ CREATE INDEX idx_account_number ON accounts.account (number);
 
 -- Create the card table
 CREATE TABLE accounts.card (
-    number VARCHAR(20) PRIMARY KEY,
-    cvv CHAR(3) NOT NULL CHECK (cvv ~ '^\d{3}$'),
+    number VARCHAR(50) PRIMARY KEY,
+    cvv VARCHAR(50) NOT NULL,
     type VARCHAR(10) NOT NULL CHECK (type IN ('CREDIT', 'DEBIT')),
     account_id UUID NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts.account(id)
@@ -51,7 +51,7 @@ CREATE TABLE accounts.transaction (
     total_amount NUMERIC(10, 2) NOT NULL,
     account_id UUID NOT NULL,
     account_balance NUMERIC(10, 2) NOT NULL CHECK (account_balance >= 0) DEFAULT 0,
-    card_id VARCHAR(20),
+    card_id VARCHAR(50),
     ref_transaction UUID NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts.account(id),
     FOREIGN KEY (card_id) REFERENCES accounts.card(number)

@@ -30,6 +30,7 @@ class AccountsServiceTest {
     private AccountsService accountsService;
     private CreateDebitCardService createDebitCardService;
     private CreateCreditCardService createCreditCardService;
+    private EncryptionService encryptionService;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +39,9 @@ class AccountsServiceTest {
         cardsServiceFactoryService = Mockito.mock(CardsServiceFactoryService.class);
         createDebitCardService = Mockito.mock(CreateDebitCardService.class);
         createCreditCardService = Mockito.mock(CreateCreditCardService.class);
-        accountsService = new AccountsService(accountsRepository, accountHoldersRepository, cardsServiceFactoryService);
+        encryptionService = new EncryptionService("5lyi1fhGSeoBrI0+qERnWBUJmitWJ9IX3GVCYqANmt4=");
+        accountsService = new AccountsService(accountsRepository, accountHoldersRepository,
+                cardsServiceFactoryService, encryptionService);
     }
 
     @Test
@@ -53,14 +56,14 @@ class AccountsServiceTest {
         AccountEntity persistedAccount = generateAccountEntity(persistedAccountHolder, "12345");
 
         CardEntity debitCardEntity = new CardEntity(
-                "7843527158943",
-                "123",
+                encryptionService.encrypt("7843527158943"),
+                encryptionService.encrypt("123"),
                 CardTypeEnum.DEBIT,
                 persistedAccount
         );
         CardEntity creditCardEntity = new CardEntity(
-                "7843527158944",
-                "124",
+                encryptionService.encrypt("7843527158944"),
+                encryptionService.encrypt("124"),
                 CardTypeEnum.CREDIT,
                 persistedAccount
         );

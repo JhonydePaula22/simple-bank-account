@@ -37,12 +37,14 @@ class GetAccountServiceTest {
     private AccountHoldersRepository accountHoldersRepository;
     private CardsRepository cardsRepository;
     private GetAccountService getAccountService;
+    private EncryptionService encryptionService;
 
     @BeforeEach
     void setUp() {
+        encryptionService = new EncryptionService("5lyi1fhGSeoBrI0+qERnWBUJmitWJ9IX3GVCYqANmt4=");
         accountsRepository = Mockito.mock(AccountsRepository.class);
         cardsRepository = Mockito.mock(CardsRepository.class);
-        getAccountService = new GetAccountService(accountsRepository, cardsRepository);
+        getAccountService = new GetAccountService(accountsRepository, cardsRepository, encryptionService);
     }
 
     @Test

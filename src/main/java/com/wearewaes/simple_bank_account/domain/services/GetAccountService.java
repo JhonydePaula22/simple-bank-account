@@ -21,10 +21,13 @@ public class GetAccountService {
 
     private final AccountsRepository accountsRepository;
     private final CardsRepository cardsRepository;
+    private final EncryptionService encryptionService;
 
-    public GetAccountService(AccountsRepository accountsRepository, CardsRepository cardsRepository) {
+    public GetAccountService(AccountsRepository accountsRepository, CardsRepository cardsRepository,
+                             EncryptionService encryptionService) {
         this.accountsRepository = accountsRepository;
         this.cardsRepository = cardsRepository;
+        this.encryptionService = encryptionService;
     }
 
 
@@ -32,7 +35,7 @@ public class GetAccountService {
         AccountEntity accountEntity = accountsRepository.findByNumber(accountNumber).orElseThrow(
                 () -> new AccountNotFoundException("The account number informed is not a valid one."));
         List<CardEntity> cards = cardsRepository.findCardsByAccount(accountEntity);
-        return toDtoMapper(accountEntity, cards);
+        return toDtoMapper(accountEntity, cards, encryptionService);
     }
 
 

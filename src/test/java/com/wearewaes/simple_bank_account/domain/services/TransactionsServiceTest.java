@@ -49,12 +49,16 @@ public class TransactionsServiceTest {
     @Mock
     private CardsRepository cardsRepository;
 
+    private EncryptionService encryptionService;
+
     @InjectMocks
     private TransactionsService transactionsService;
 
     @BeforeEach
     void setUp() {
-        transactionsService = new TransactionsService(transactionsRepository, accountsRepository, cardsRepository);
+        encryptionService = new EncryptionService("5lyi1fhGSeoBrI0+qERnWBUJmitWJ9IX3GVCYqANmt4=");
+        transactionsService = new TransactionsService(transactionsRepository, accountsRepository,
+                cardsRepository, encryptionService);
     }
 
     @Test
@@ -133,8 +137,8 @@ public class TransactionsServiceTest {
         cardDTO.setSecurityCode("000");
 
         CardEntity cardEntity = new CardEntity();
-        cardEntity.setNumber("1234");
-        cardEntity.setCvv("000");
+        cardEntity.setNumber(encryptionService.encrypt("1234"));
+        cardEntity.setCvv(encryptionService.encrypt("000"));
         cardEntity.setType(CardTypeEnum.DEBIT);
 
         NewAccountDebitTransactionDTO newAccountDebitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -191,8 +195,8 @@ public class TransactionsServiceTest {
         cardDTO.setSecurityCode("000");
 
         CardEntity cardEntity = new CardEntity();
-        cardEntity.setNumber("1234");
-        cardEntity.setCvv("000");
+        cardEntity.setNumber(encryptionService.encrypt("1234"));
+        cardEntity.setCvv(encryptionService.encrypt("000"));
         cardEntity.setType(CardTypeEnum.CREDIT);
 
         NewAccountDebitTransactionDTO newAccountDebitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -251,8 +255,8 @@ public class TransactionsServiceTest {
         cardDTO.setSecurityCode("000");
 
         CardEntity cardEntity = new CardEntity();
-        cardEntity.setNumber("1234");
-        cardEntity.setCvv("000");
+        cardEntity.setNumber(encryptionService.encrypt("1234"));
+        cardEntity.setCvv(encryptionService.encrypt("000"));
         cardEntity.setType(CardTypeEnum.CREDIT);
 
         NewAccountDebitTransactionDTO newAccountDebitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -284,12 +288,12 @@ public class TransactionsServiceTest {
 
         CardDTO cardDTO = new CardDTO();
         cardDTO.setType(CardTypeEnum.CREDIT);
-        cardDTO.setNumber("1234");
-        cardDTO.setSecurityCode("000");
+        cardDTO.setNumber(encryptionService.encrypt("1234"));
+        cardDTO.setSecurityCode(encryptionService.encrypt("000"));
 
         CardEntity cardEntity = new CardEntity();
-        cardEntity.setNumber("1233");
-        cardEntity.setCvv("000");
+        cardEntity.setNumber(encryptionService.encrypt("1233"));
+        cardEntity.setCvv(encryptionService.encrypt("000"));
         cardEntity.setType(CardTypeEnum.CREDIT);
 
         NewAccountDebitTransactionDTO newAccountDebitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -321,12 +325,12 @@ public class TransactionsServiceTest {
 
         CardDTO cardDTO = new CardDTO();
         cardDTO.setType(CardTypeEnum.CREDIT);
-        cardDTO.setNumber("1234");
-        cardDTO.setSecurityCode("000");
+        cardDTO.setNumber(encryptionService.encrypt("1234"));
+        cardDTO.setSecurityCode(encryptionService.encrypt("000"));
 
         CardEntity cardEntity = new CardEntity();
-        cardEntity.setNumber("1234");
-        cardEntity.setCvv("001");
+        cardEntity.setNumber(encryptionService.encrypt("1234"));
+        cardEntity.setCvv(encryptionService.encrypt("001"));
         cardEntity.setType(CardTypeEnum.CREDIT);
 
         NewAccountDebitTransactionDTO newAccountDebitTransactionDTO = new NewAccountDebitTransactionDTO();

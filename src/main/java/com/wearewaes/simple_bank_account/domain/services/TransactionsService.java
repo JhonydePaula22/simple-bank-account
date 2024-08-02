@@ -34,13 +34,15 @@ public class TransactionsService {
     private final TransactionsRepository transactionsRepository;
     private final AccountsRepository accountsRepository;
     private final CardsRepository cardsRepository;
+    private final EncryptionService encryptionService;
 
     public TransactionsService(TransactionsRepository transactionsRepository,
                                AccountsRepository accountsRepository,
-                               CardsRepository cardsRepository) {
+                               CardsRepository cardsRepository, EncryptionService encryptionService) {
         this.transactionsRepository = transactionsRepository;
         this.accountsRepository = accountsRepository;
         this.cardsRepository = cardsRepository;
+        this.encryptionService = encryptionService;
     }
 
     // will prevent any delete or update on the entities in the session to happen.
@@ -110,9 +112,16 @@ public class TransactionsService {
     private CardEntity getCardEntity(AccountEntity accountEntity, CardDTO card) {
         return cardsRepository.findCardsByAccount(accountEntity)
                 .stream()
-                .filter(c -> card.getNumber().equals(c.getNumber()) && card.getSecurityCode().equals(c.getCvv())).
+                .filter(c ->
+                        card.getNumber()
+                                .equals(encryptionService.decrypt(c.getNumber()))
+                                && card.getSecurityCode()
+                                .equals(encryptionService.decrypt(c.getCvv()))
+                ).
                 findFirst()
                 .orElseThrow(() -> new BadRequestException("Card data is invalid. Please check and try again."));
+
+
     }
 
     private AccountEntity getAccountEntity(String accountNumber) {
@@ -129,7 +138,7 @@ public class TransactionsService {
         return newAccountBalance.signum() > ANY_NEGATIVE_NUMBER;
     }
 
-    private static BigDecimal percentage(BigDecimal base, BigDecimal pct){
+    private static BigDecimal percentage(BigDecimal base, BigDecimal pct) {
         return base.multiply(pct).divide(ONE_HUNDRED);
     }
 }

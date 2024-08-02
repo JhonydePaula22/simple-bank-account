@@ -26,13 +26,15 @@ public class AccountsService {
     private final AccountsRepository accountsRepository;
     private final AccountHoldersRepository accountHoldersRepository;
     private final CardsServiceFactoryService cardsServiceFactoryService;
+    private final EncryptionService encryptionService;
 
     public AccountsService(AccountsRepository accountsRepository,
                            AccountHoldersRepository accountHoldersRepository,
-                           CardsServiceFactoryService cardsServiceFactoryService) {
+                           CardsServiceFactoryService cardsServiceFactoryService, EncryptionService encryptionService) {
         this.accountsRepository = accountsRepository;
         this.accountHoldersRepository = accountHoldersRepository;
         this.cardsServiceFactoryService = cardsServiceFactoryService;
+        this.encryptionService = encryptionService;
     }
 
     @Transactional(rollbackFor = {RuntimeException.class})
@@ -40,7 +42,7 @@ public class AccountsService {
         AccountHolderEntity persistedAccountHolder = persistAccountHolder(newAccountDTO);
         AccountEntity persistedAccount = persistAccount(persistedAccountHolder);
         List<CardEntity> cardEntities = generateCards(persistedAccount, newAccountDTO.getCreditCard());
-        return toDtoMapper(persistedAccount, cardEntities);
+        return toDtoMapper(persistedAccount, cardEntities, encryptionService);
     }
 
     private AccountHolderEntity persistAccountHolder(NewAccountDTO newAccountDTO) {
