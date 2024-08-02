@@ -61,7 +61,7 @@ public class TransactionsService {
                 transactionReference);
         accountEntity.setBalance(newAccountBalance);
         saveAccountEntityChanges(accountEntity);
-        var persistedTransactionEntity = transactionsRepository.save(transactionEntity);
+        TransactionEntity persistedTransactionEntity = transactionsRepository.save(transactionEntity);
         return toTransactionReceiptDTO(persistedTransactionEntity);
     }
 
@@ -96,7 +96,7 @@ public class TransactionsService {
                     transactionReference);
             accountEntity.setBalance(newAccountBalance);
             saveAccountEntityChanges(accountEntity);
-            var persistedTransactionEntity = transactionsRepository.save(transactionEntity);
+            TransactionEntity persistedTransactionEntity = transactionsRepository.save(transactionEntity);
 
             if (transactionType.equals(TransactionTypeEnum.TRANSFER)) {
                 NewAccountCreditTransactionDTO newAccountCreditTransactionDTO =
@@ -120,8 +120,6 @@ public class TransactionsService {
                 ).
                 findFirst()
                 .orElseThrow(() -> new BadRequestException("Card data is invalid. Please check and try again."));
-
-
     }
 
     private AccountEntity getAccountEntity(String accountNumber) {

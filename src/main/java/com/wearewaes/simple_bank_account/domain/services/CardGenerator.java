@@ -20,7 +20,7 @@ public abstract class CardGenerator {
     }
 
     CardEntity generateCard(AccountEntity accountEntity) {
-        var card = new CardEntity(
+        CardEntity card = new CardEntity(
                 generateCardNumber(),
                 generateCVV(),
                 this.type,

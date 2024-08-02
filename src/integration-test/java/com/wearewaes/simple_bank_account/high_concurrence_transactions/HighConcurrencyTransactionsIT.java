@@ -5,9 +5,11 @@ import com.wearewaes.model.AccountDTO;
 import com.wearewaes.model.AccountsBalanceDTO;
 import com.wearewaes.model.CardTypeEnum;
 import com.wearewaes.model.NewAccountCreditTransactionDTO;
+import com.wearewaes.model.NewAccountDTO;
 import com.wearewaes.model.NewAccountDebitTransactionDTO;
 import com.wearewaes.model.TransactionReceiptDTO;
 import com.wearewaes.simple_bank_account.TestSetup;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DisplayName("High concurrency test")
 public class HighConcurrencyTransactionsIT extends TestSetup {
 
     @Autowired
@@ -45,6 +48,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
+    @DisplayName("execute 1000 transactions of transfer with debit card and the total balance in the end must be equal to the initial amount of money")
     public void testHighConcurrencyTransactions() throws Exception {
         for (int i = 0; i < NUM_ACCOUNTS; i++) {
             AccountDTO account = createAccountDTOAndDepositMoney("id_" + i, INITIAL_BALANCE);
@@ -89,9 +93,9 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
     }
 
     private AccountDTO createAccountDTOAndDepositMoney(String identification, Double amount) throws Exception {
-        var newAccount = generateNewAccount(false, identification);
+        NewAccountDTO newAccount = generateNewAccount(false, identification);
 
-        var newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
+        String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +109,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
         NewAccountCreditTransactionDTO newAccountCreditTransactionDTO = new NewAccountCreditTransactionDTO();
         newAccountCreditTransactionDTO.setAmount(amount);
 
-        var depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
+        String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -132,7 +136,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
         debitTransactionDTO.setCard(origin.getCards().stream()
                 .filter(c -> c.getType().equals(CardTypeEnum.DEBIT)).findFirst().get());
 
-        var withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
+        String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -143,7 +147,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
     }
 
     Double getAllAccountsBalanceSum() throws Exception {
-        var result = mockMvc.perform(MockMvcRequestBuilders.get("/accounts/balance")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/accounts/balance")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())

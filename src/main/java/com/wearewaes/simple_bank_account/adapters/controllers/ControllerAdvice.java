@@ -54,7 +54,7 @@ public class ControllerAdvice {
     }
 
     private static ProblemDetail generateProblemDetail(Exception exception, HttpStatus httpStatus, String title) {
-        var problemDetail = ProblemDetail.forStatusAndDetail(httpStatus, exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(httpStatus, exception.getMessage());
         problemDetail.setTitle(title);
         return problemDetail;
     }
