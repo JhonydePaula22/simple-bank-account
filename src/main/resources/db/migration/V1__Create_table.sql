@@ -44,22 +44,16 @@ CREATE INDEX idx_card_number ON accounts.card (number);
 CREATE TABLE accounts.transaction (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     timestamp TIMESTAMP NOT NULL,
-    type VARCHAR(10) NOT NULL CHECK (type IN ('WITHDRAW', 'TRANSFER', 'DEPOSIT')),
+    type VARCHAR(10) NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
     credit_card_fee_amount NUMERIC(10, 2),
     credit_card_fee NUMERIC(5, 2),
     total_amount NUMERIC(10, 2) NOT NULL,
     account_id UUID NOT NULL,
-    account_balance NUMERIC(10, 2) NOT NULL CHECK (account_balance >= 0) DEFAULT 0,
+    account_balance NUMERIC(10, 2) NOT NULL,
     card_id VARCHAR(50),
-    ref_transaction UUID NOT NULL,
-    FOREIGN KEY (account_id) REFERENCES accounts.account(id),
-    FOREIGN KEY (card_id) REFERENCES accounts.card(number)
+    ref_transaction UUID NOT NULL
 );
-
-CREATE INDEX idx_transaction_id ON accounts.transaction (id);
-CREATE INDEX idx_transaction_timestamp ON accounts.transaction (timestamp);
-
 
 -- Grant usage on the schema to the user
 GRANT USAGE ON SCHEMA accounts TO "user";
