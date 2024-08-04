@@ -145,7 +145,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
     }
 
     Double getAllAccountsBalanceSum() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/accounts/balance")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/admin/accounts/balance")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
