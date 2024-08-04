@@ -25,8 +25,8 @@ The project is built using Spring Boot 3.2 and Java 21, with PostgreSQL as the d
 - Users can choose to have a credit card or not. A debit card is mandatory.
 - Credit cards are pre-paid.
 - The transfer system operates within the same bank.
-- Cards Fee will be set via a rest endpoint [/v1/admin/cards/fee](http://localhost:8080/v1/admin/cards/fee)
-- Accounts will have their balance increased via a rest endpoint [/v1/transactions/deposit](http://localhost:8080/v1/transactions/deposit)
+- Cards Fee will be set via a rest endpoint [/v1/admin/cards/fee](http://localhost:8080/v1/swagger-ui/index.html#/admin/updateCardFee)
+- Accounts will have their balance increased via a rest endpoint [/v1/transactions/deposit](http://localhost:8080/v1/swagger-ui/index.html#/transactions/createDepositTransaction)
 
 
 **Future Considerations**
@@ -74,6 +74,21 @@ Clone the repository:
 git clone https://github.com/JhonydePaula22/simple-bank-account.git
 cd simple-bank-account
 ```
+
+I have created a [script](run.sh) to package and run the project. For that you **must have docker** running in your machine.
+
+You might need to give permissions for it to run. Don't worry it is safe! ;D
+
+To give permissions for the script run:
+```shell
+chmod +x run.sh
+```
+Running the script:
+```shell
+./run.sh
+```
+
+You are of course entitled to run it yourself, so please follow the commands bellow:
 
 Compile the project:
 
