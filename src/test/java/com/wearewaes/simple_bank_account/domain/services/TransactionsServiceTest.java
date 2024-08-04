@@ -51,6 +51,9 @@ public class TransactionsServiceTest {
 
     private EncryptionService encryptionService;
 
+    @Mock
+    private CardsFeeService cardsFeeFactory;
+
     @InjectMocks
     private TransactionsService transactionsService;
 
@@ -58,7 +61,7 @@ public class TransactionsServiceTest {
     void setUp() {
         encryptionService = new EncryptionService("5lyi1fhGSeoBrI0+qERnWBUJmitWJ9IX3GVCYqANmt4=");
         transactionsService = new TransactionsService(transactionsRepository, accountsRepository,
-                cardsRepository, encryptionService);
+                cardsRepository, encryptionService, cardsFeeFactory);
     }
 
     @Test
@@ -161,6 +164,7 @@ public class TransactionsServiceTest {
         when(accountsRepository.findByNumber(accountNumber)).thenReturn(Optional.of(accountEntity));
         when(cardsRepository.findCardsByAccount(accountEntity)).thenReturn(List.of(cardEntity));
         when(transactionsRepository.save(any(TransactionEntity.class))).thenReturn(transactionEntity);
+        when(cardsFeeFactory.getCardFee(CardTypeEnum.DEBIT)).thenReturn(BigDecimal.ZERO);
 
         // Act
         TransactionReceiptDTO receiptDTO = transactionsService.processDebitTransaction(newAccountDebitTransactionDTO, accountNumber, TransactionTypeEnum.DEPOSIT, destinationAccountNumber);
@@ -174,6 +178,7 @@ public class TransactionsServiceTest {
         verify(transactionsRepository, times(1)).save(any(TransactionEntity.class));
         verify(accountsRepository, times(1)).saveAccount(accountEntity);
         verify(cardsRepository, times(1)).findCardsByAccount(accountEntity);
+        verify(cardsFeeFactory, times(1)).getCardFee(CardTypeEnum.DEBIT);
     }
 
     @Test
@@ -224,6 +229,7 @@ public class TransactionsServiceTest {
         when(accountsRepository.findByNumber(destinationAccountNumber)).thenReturn(Optional.of(accountEntity2));
         when(cardsRepository.findCardsByAccount(accountEntity)).thenReturn(List.of(cardEntity));
         when(transactionsRepository.save(any(TransactionEntity.class))).thenReturn(transactionEntity);
+        when(cardsFeeFactory.getCardFee(CardTypeEnum.CREDIT)).thenReturn(BigDecimal.ONE);
 
         // Act
         TransactionReceiptDTO receiptDTO = transactionsService.processDebitTransaction(newAccountDebitTransactionDTO, accountNumber, TransactionTypeEnum.TRANSFER, destinationAccountNumber);
@@ -238,6 +244,7 @@ public class TransactionsServiceTest {
         verify(transactionsRepository, times(2)).save(any(TransactionEntity.class));
         verify(accountsRepository, times(1)).saveAccount(accountEntity);
         verify(cardsRepository, times(1)).findCardsByAccount(accountEntity);
+        verify(cardsFeeFactory, times(1)).getCardFee(CardTypeEnum.CREDIT);
     }
 
     @Test
@@ -265,6 +272,7 @@ public class TransactionsServiceTest {
 
         when(accountsRepository.findByNumber(accountNumber)).thenReturn(Optional.of(accountEntity));
         when(cardsRepository.findCardsByAccount(accountEntity)).thenReturn(List.of(cardEntity));
+        when(cardsFeeFactory.getCardFee(CardTypeEnum.CREDIT)).thenReturn(BigDecimal.ONE);
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class, () ->
@@ -275,6 +283,7 @@ public class TransactionsServiceTest {
         verify(cardsRepository, times(1)).findCardsByAccount(accountEntity);
         verify(transactionsRepository, never()).save(any(TransactionEntity.class));
         verify(accountsRepository, never()).saveAccount(any(AccountEntity.class));
+        verify(cardsFeeFactory, times(1)).getCardFee(CardTypeEnum.CREDIT);
     }
 
     @Test

@@ -2,9 +2,11 @@ package com.wearewaes.simple_bank_account.config;
 
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountHoldersRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.AccountsRepository;
+import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsFeeRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.CardsRepository;
 import com.wearewaes.simple_bank_account.domain.ports.repositories.TransactionsRepository;
 import com.wearewaes.simple_bank_account.domain.services.AccountsService;
+import com.wearewaes.simple_bank_account.domain.services.CardsFeeService;
 import com.wearewaes.simple_bank_account.domain.services.CardsServiceFactoryService;
 import com.wearewaes.simple_bank_account.domain.services.CreateCreditCardService;
 import com.wearewaes.simple_bank_account.domain.services.CreateDebitCardService;
@@ -52,11 +54,17 @@ public class SpringConfig {
     }
 
     @Bean
+    @DependsOn("cardsFeeService")
     public TransactionsService transactionsService(TransactionsRepository transactionsRepository,
                                                    AccountsRepository accountsRepository,
                                                    CardsRepository cardsRepository,
-                                                   EncryptionService encryptionService) {
-        return new TransactionsService(transactionsRepository, accountsRepository, cardsRepository, encryptionService);
+                                                   EncryptionService encryptionService,
+                                                   CardsFeeService cardsFeeFactory) {
+        return new TransactionsService(transactionsRepository,
+                accountsRepository,
+                cardsRepository,
+                encryptionService,
+                cardsFeeFactory);
     }
 
     @Bean
@@ -64,6 +72,11 @@ public class SpringConfig {
                                                CardsRepository cardsRepository,
                                                EncryptionService encryptionService) {
         return new GetAccountService(accountsRepository, cardsRepository, encryptionService);
+    }
+
+    @Bean
+    public CardsFeeService cardsFeeService(CardsFeeRepository cardsFeeRepository) {
+        return new CardsFeeService(cardsFeeRepository);
     }
 
     @Bean

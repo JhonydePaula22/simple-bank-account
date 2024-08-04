@@ -15,7 +15,31 @@ tags:
     description: Everything about Account
   - name: transactions
     description: Everything about Transactions
+  - name: admin
+    description: Everything about Admin operations
 paths:
+  /admin/cards/fee:
+    put:
+      tags:
+        - admin
+      summary: Replace Card Fee
+      description: Here you may replace a card fee.
+      operationId: updateCardFee
+      requestBody:
+        description: Update card fee object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardFeeDTO'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardFeeDTO'
+        400:
+          description: Invalid data provided
   /accounts:
     post:
       tags:
@@ -357,3 +381,13 @@ components:
         number:
           type: integer
           example: 1
+
+    CardFeeDTO:
+      type: object
+      properties:
+        fee:
+          type: number
+          format: double
+          example: 1,0
+        type:
+          $ref: '#/components/schemas/CardTypeEnum'

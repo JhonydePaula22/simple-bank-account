@@ -1,7 +1,6 @@
 package com.wearewaes.simple_bank_account.domain.services;
 
 import com.wearewaes.model.CardDTO;
-import com.wearewaes.model.CardTypeEnum;
 import com.wearewaes.model.NewAccountCreditTransactionDTO;
 import com.wearewaes.model.NewAccountDebitTransactionDTO;
 import com.wearewaes.model.TransactionReceiptDTO;
@@ -37,14 +36,18 @@ public class TransactionsService {
     private final AccountsRepository accountsRepository;
     private final CardsRepository cardsRepository;
     private final EncryptionService encryptionService;
+    private final CardsFeeService cardsFeeService;
 
     public TransactionsService(TransactionsRepository transactionsRepository,
                                AccountsRepository accountsRepository,
-                               CardsRepository cardsRepository, EncryptionService encryptionService) {
+                               CardsRepository cardsRepository,
+                               EncryptionService encryptionService,
+                               CardsFeeService cardsFeeService) {
         this.transactionsRepository = transactionsRepository;
         this.accountsRepository = accountsRepository;
         this.cardsRepository = cardsRepository;
         this.encryptionService = encryptionService;
+        this.cardsFeeService = cardsFeeService;
     }
 
     // will prevent any delete or update on the entities in the session to happen.
@@ -79,8 +82,7 @@ public class TransactionsService {
 
         BigDecimal currentAccountBalance = accountEntity.getBalance();
         BigDecimal transactionAmount = BigDecimal.valueOf(newAccountDebitTransactionDTO.getAmount());
-        BigDecimal transactionFee = newAccountDebitTransactionDTO.getCard().getType().equals(CardTypeEnum.DEBIT)
-                ? BigDecimal.ZERO : BigDecimal.ONE;
+        BigDecimal transactionFee = cardsFeeService.getCardFee(newAccountDebitTransactionDTO.getCard().getType());
         BigDecimal transactionFeeAmount = percentage(transactionAmount, transactionFee);
         BigDecimal totalTransactionAmount = transactionAmount.add(transactionFeeAmount);
         BigDecimal newAccountBalance = currentAccountBalance.subtract(totalTransactionAmount);

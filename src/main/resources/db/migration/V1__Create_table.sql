@@ -55,6 +55,19 @@ CREATE TABLE accounts.transaction (
     ref_transaction UUID NOT NULL
 );
 
+-- Create the fee table
+CREATE TABLE accounts.fee (
+    type VARCHAR(10) PRIMARY KEY NOT NULL CHECK (type IN ('CREDIT', 'DEBIT')),
+    fee NUMERIC(5,2) DEFAULT 0
+);
+
+CREATE INDEX idx_type on accounts.fee(type);
+
+-- Inserting default values on database
+INSERT INTO accounts.fee (type, fee) VALUES ('CREDIT', 1.00);
+INSERT INTO accounts.fee (type, fee) VALUES ('DEBIT', 0.00);
+
+
 -- Grant usage on the schema to the user
 GRANT USAGE ON SCHEMA accounts TO "user";
 
