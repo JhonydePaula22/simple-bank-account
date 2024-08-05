@@ -97,6 +97,59 @@ class TransactionsControllerIT extends TestSetup {
                     });
 
         }
+
+        @Test
+        @DisplayName("no deposit with negative amount is allowed - bad request")
+        void testDepositMoneyToAccountWithNegativeAmountReturnsBadRequest() throws Exception {
+            NewAccountDTO newAccount = generateNewAccount(false, "Hfid*(&8070fhjdsiah");
+
+            String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
+
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(newAccountDtoJson))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andReturn();
+
+            String accountDtoJson = mvcResult.getResponse().getContentAsString();
+            AccountDTO accountDTO = objectMapper.readValue(accountDtoJson, AccountDTO.class);
+
+            NewAccountCreditTransactionDTO newAccountCreditTransactionDTO = new NewAccountCreditTransactionDTO();
+            newAccountCreditTransactionDTO.setAmount(-100.00);
+
+            String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
+
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(depositDtoJson)
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
+                    ).andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(result -> {
+                        ProblemDetail response = objectMapper
+                                .readValue(result.getResponse().getContentAsString(), ProblemDetail.class);
+
+                        assertNotNull(response);
+                        assertEquals("The amount for this transaction must not be a smaller than zero.", response.getDetail());
+                        assertEquals(URI.create(TRANSACTIONS_DEPOSITS_PATH), response.getInstance());
+                        assertEquals("Invalid data on the request", response.getTitle());
+                    });
+
+            accountDTO.setBalance(0.0);
+
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        AccountDTO response = objectMapper
+                                .readValue(result.getResponse().getContentAsString(), AccountDTO.class);
+
+                        assertNotNull(response);
+                        assertEquals(accountDTO, response);
+                    });
+
+        }
     }
 
     @Nested
@@ -596,6 +649,138 @@ class TransactionsControllerIT extends TestSetup {
 
                         assertNotNull(response);
                         assertEquals(accountDTODestination.getBalance(), response.getBalance());
+                    });
+        }
+
+        @Test
+        @DisplayName("no transfer money with negative amount is allowed. bad request balances not changed")
+        void testTransferMoneyWithNegativeAmountNoBalanceUpdateAfterBadRequest() throws Exception {
+            NewAccountDTO newAccountOrigin = generateNewAccount(true, "Hfi%&*09");
+            NewAccountDTO newAccountDestination = generateNewAccount(false, "HVGHJd*(&80708");
+
+            String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
+            String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
+
+            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(newAccountOriginJson))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andReturn();
+
+            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(newAccountDestinationJson))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andReturn();
+
+            String accountDtoOriginJson = mvcResult1.getResponse().getContentAsString();
+            String accountDtoDestinationJson = mvcResult2.getResponse().getContentAsString();
+
+            AccountDTO accountDTOOrigin = objectMapper.readValue(accountDtoOriginJson, AccountDTO.class);
+            AccountDTO accountDTODestination = objectMapper.readValue(accountDtoDestinationJson, AccountDTO.class);
+
+            NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
+            debitTransactionDTO.setAmount(-50.0);
+            debitTransactionDTO.setCard(accountDTOOrigin.getCards().stream()
+                    .filter(c-> c.getType().equals(CardTypeEnum.CREDIT)).findFirst().get());
+            debitTransactionDTO.getCard().setNumber("123454325432");
+
+            String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
+
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_TRANSFERS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(withdrawDtoJson)
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                            .header(DESTINATION_ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
+                    ).andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(result -> {
+                        ProblemDetail response = objectMapper
+                                .readValue(result.getResponse().getContentAsString(), ProblemDetail.class);
+
+                        assertNotNull(response);
+                        assertEquals("The amount for this transaction must not be a smaller than zero.", response.getDetail());
+                        assertEquals(URI.create(TRANSACTIONS_TRANSFERS_PATH), response.getInstance());
+                        assertEquals("Invalid data on the request", response.getTitle());
+                    });
+
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        AccountDTO response = objectMapper
+                                .readValue(result.getResponse().getContentAsString(), AccountDTO.class);
+
+                        assertNotNull(response);
+                        assertEquals(accountDTOOrigin.getBalance(), response.getBalance());
+                    });
+
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        AccountDTO response = objectMapper
+                                .readValue(result.getResponse().getContentAsString(), AccountDTO.class);
+
+                        assertNotNull(response);
+                        assertEquals(accountDTODestination.getBalance(), response.getBalance());
+                    });
+        }
+
+        @Test
+        @DisplayName("no withdraw money with negative amount is allowed. bad request balances not changed")
+        void testWithdrawMoneyWithNegativeAmountNoBalanceUpdateAfterBadRequest() throws Exception {
+            NewAccountDTO newAccountOrigin = generateNewAccount(true, "Hfi%&*09");
+
+            String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
+
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(newAccountOriginJson))
+                    .andExpect(MockMvcResultMatchers.status().isCreated())
+                    .andReturn();
+
+            String accountDtoOriginJson = mvcResult.getResponse().getContentAsString();
+
+            AccountDTO accountDTOOrigin = objectMapper.readValue(accountDtoOriginJson, AccountDTO.class);
+
+            NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
+            debitTransactionDTO.setAmount(-50.0);
+            debitTransactionDTO.setCard(accountDTOOrigin.getCards().stream()
+                    .filter(c-> c.getType().equals(CardTypeEnum.CREDIT)).findFirst().get());
+            debitTransactionDTO.getCard().setNumber("123454325432");
+
+            String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
+
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_WITHDRAWALS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(withdrawDtoJson)
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                    ).andExpect(MockMvcResultMatchers.status().isBadRequest())
+                    .andExpect(result -> {
+                        ProblemDetail response = objectMapper
+                                .readValue(result.getResponse().getContentAsString(), ProblemDetail.class);
+
+                        assertNotNull(response);
+                        assertEquals("The amount for this transaction must not be a smaller than zero.", response.getDetail());
+                        assertEquals(URI.create(TRANSACTIONS_WITHDRAWALS_PATH), response.getInstance());
+                        assertEquals("Invalid data on the request", response.getTitle());
+                    });
+
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                    )
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        AccountDTO response = objectMapper
+                                .readValue(result.getResponse().getContentAsString(), AccountDTO.class);
+
+                        assertNotNull(response);
+                        assertEquals(accountDTOOrigin.getBalance(), response.getBalance());
                     });
         }
     }

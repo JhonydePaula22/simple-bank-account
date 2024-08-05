@@ -55,9 +55,10 @@ public class TransactionsService {
     public TransactionReceiptDTO processCreditTransaction(
             NewAccountCreditTransactionDTO newAccountCreditTransactionDTO, String accountNumber,
             UUID transactionReference) {
+        BigDecimal transactionAmount = BigDecimal.valueOf(newAccountCreditTransactionDTO.getAmount());
+        checkTransactionAmount(transactionAmount);
         AccountEntity accountEntity = getAccountEntity(accountNumber);
         BigDecimal currentAccountBalance = accountEntity.getBalance();
-        BigDecimal transactionAmount = BigDecimal.valueOf(newAccountCreditTransactionDTO.getAmount());
         BigDecimal newAccountBalance = currentAccountBalance.add(transactionAmount);
         TransactionEntity transactionEntity = generateDepositTransaction(
                 newAccountCreditTransactionDTO,
@@ -77,17 +78,18 @@ public class TransactionsService {
                                                          String accountNumber,
                                                          TransactionTypeEnum transactionType,
                                                          String destinationAccountNumber) {
+        BigDecimal transactionAmount = BigDecimal.valueOf(newAccountDebitTransactionDTO.getAmount());
+        checkTransactionAmount(transactionAmount);
+
         AccountEntity accountEntity = getAccountEntity(accountNumber);
         CardEntity cardEntity = getCardEntity(accountEntity, newAccountDebitTransactionDTO.getCard());
 
         BigDecimal currentAccountBalance = accountEntity.getBalance();
-        BigDecimal transactionAmount = BigDecimal.valueOf(newAccountDebitTransactionDTO.getAmount());
         BigDecimal transactionFee = cardsFeeService.getCardFee(newAccountDebitTransactionDTO.getCard().getType());
         BigDecimal transactionFeeAmount = percentage(transactionAmount, transactionFee);
         BigDecimal totalTransactionAmount = transactionAmount.add(transactionFeeAmount);
         BigDecimal newAccountBalance = currentAccountBalance.subtract(totalTransactionAmount);
-
-        if (isNewAccountBalancePositive(newAccountBalance)) {
+        if (isAmountPositive(newAccountBalance)) {
             UUID transactionReference = UUID.randomUUID();
             TransactionEntity transactionEntity = generateDebitTransaction(
                     transactionType,
@@ -137,9 +139,20 @@ public class TransactionsService {
         accountsRepository.saveAccount(accountEntity);
     }
 
-    private static boolean isNewAccountBalancePositive(BigDecimal newAccountBalance) {
+    private static boolean isAmountPositive(BigDecimal amount) {
         // checking if new account balance is 0 or positive
-        return newAccountBalance.signum() > ANY_NEGATIVE_NUMBER;
+        return amount.signum() > ANY_NEGATIVE_NUMBER;
+    }
+
+    private static void checkTransactionAmount(BigDecimal transactionAmount) {
+        if (isAmountNegative(transactionAmount)) {
+            throw new BadRequestException("The amount for this transaction must not be a smaller than zero.");
+        }
+    }
+
+    private static boolean isAmountNegative(BigDecimal amount) {
+        // checking if new account balance is 0 or positive
+        return amount.signum() == ANY_NEGATIVE_NUMBER;
     }
 
     private static BigDecimal percentage(BigDecimal base, BigDecimal pct) {

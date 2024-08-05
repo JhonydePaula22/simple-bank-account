@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -104,6 +105,29 @@ public class TransactionsServiceTest {
         verify(accountsRepository, times(1)).findByNumber(accountNumber);
         verify(transactionsRepository, times(1)).save(any(TransactionEntity.class));
         verify(accountsRepository, times(1)).saveAccount(accountEntity);
+    }
+
+    @Test
+    void testProcessCreditTransactionWithNegativeValueThrowBadRequestException() {
+        // Arrange
+        String accountNumber = "123456";
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setNumber(accountNumber);
+        accountEntity.setBalance(BigDecimal.valueOf(1000));
+
+        NewAccountCreditTransactionDTO newAccountCreditTransactionDTO = new NewAccountCreditTransactionDTO();
+        newAccountCreditTransactionDTO.setAmount(-500.00);
+
+        UUID transactionRef = UUID.randomUUID();
+
+        // Assert
+        BadRequestException exception = assertThrows(BadRequestException.class, () ->
+                transactionsService.processCreditTransaction(newAccountCreditTransactionDTO, accountNumber, transactionRef));
+        assertEquals("The amount for this transaction must not be a smaller than zero.", exception.getMessage());
+
+        verify(accountsRepository, never()).findByNumber(anyString());
+        verify(transactionsRepository, never()).save(any(TransactionEntity.class));
+        verify(accountsRepository, never()).saveAccount(any(AccountEntity.class));
     }
 
     @Test
@@ -284,6 +308,36 @@ public class TransactionsServiceTest {
         verify(transactionsRepository, never()).save(any(TransactionEntity.class));
         verify(accountsRepository, never()).saveAccount(any(AccountEntity.class));
         verify(cardsFeeFactory, times(1)).getCardFee(CardTypeEnum.CREDIT);
+    }
+
+    @Test
+    void testProcessDebitTransactionWithNegativeAmountThrowBadRequestException() {
+        // Arrange
+        String accountNumber = "123456";
+        String destinationAccountNumber = "654321";
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setNumber(accountNumber);
+        accountEntity.setBalance(BigDecimal.valueOf(100));
+
+        CardDTO cardDTO = new CardDTO();
+        cardDTO.setType(CardTypeEnum.CREDIT);
+        cardDTO.setNumber("1234");
+        cardDTO.setSecurityCode("000");
+
+        NewAccountDebitTransactionDTO newAccountDebitTransactionDTO = new NewAccountDebitTransactionDTO();
+        newAccountDebitTransactionDTO.setAmount(-500.00);
+        newAccountDebitTransactionDTO.setCard(cardDTO);
+
+        // Act & Assert
+        BadRequestException exception = assertThrows(BadRequestException.class, () ->
+                transactionsService.processDebitTransaction(newAccountDebitTransactionDTO, accountNumber, TransactionTypeEnum.TRANSFER, destinationAccountNumber));
+        assertEquals("The amount for this transaction must not be a smaller than zero.", exception.getMessage());
+
+        verify(accountsRepository, never()).findByNumber(anyString());
+        verify(cardsRepository, never()).findCardsByAccount(any(AccountEntity.class));
+        verify(transactionsRepository, never()).save(any(TransactionEntity.class));
+        verify(accountsRepository, never()).saveAccount(any(AccountEntity.class));
+        verify(cardsFeeFactory, never()).getCardFee(any(CardTypeEnum.class));
     }
 
     @Test
