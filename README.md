@@ -27,19 +27,21 @@ The project is built using Spring Boot 3.2 and Java 21, with PostgreSQL as the d
 - The transfer system operates within the same bank.
 - Cards Fee will be set via a rest endpoint [/v1/admin/cards/fee](http://localhost:8080/v1/swagger-ui/index.html#/admin/updateCardFee)
 - Accounts will have their balance increased via a rest endpoint [/v1/transactions/deposit](http://localhost:8080/v1/swagger-ui/index.html#/transactions/createDepositTransaction)
+- Authentication is done through an external service.
 
 
 **Future Considerations**
 
-- Implement mechanisms to prevent the same transaction from being persisted twice.
-- Add security mechanisms to prevent brute-forcing card details via the API.
+- The service is missing the authorization part. Right now all the endpoints are open to anyone to perform a request. As mentioned in the assumptions, the authentication should be handled by a different service and in the future, I would add the authorization checks in this service as well. Unfortunately I had not time to implement this, but in a real project I would add this, for sure.
+- Implement mechanisms to prevent the same transaction from being persisted twice (idempotence key, or other).
+- Add security mechanisms to prevent brute-forcing card details via the API. (rate limits or other)
 - Create REST API to retrieve transaction history.
-- Define how to expose audit data present in the transaction table (log stream, UI, API, monthly reports).
-- Make card creation asynchronous to avoid account creation failure.
-- Enhance encryption security (consider salting).
+- Define how to expose audit data present in the transaction table (log stream, UI, API, monthly reports, or other).
+- Make card creation asynchronous to avoid account creation failure. (make usage of queues or other async mechanisms.)
+- Enhance encryption security. I have used a Symmetric-key algorithm which is not the most secure way and whoever has access to the key can see the values in the database (consider salting or other).
 - Improve the performance of the transaction table (e.g., partitioning by timestamp).
 - Setup tracing and metrics for observability using the preferred tool (Splunk, NewRelic or other).
-- As the application grows, move the caching from local caching into distributed caching (Redis or other).
+- As the application grows, if necessary, move the caching from local caching into distributed caching (Redis or other).
 
 
 **Technologies Used**
