@@ -5,6 +5,7 @@ import com.wearewaes.model.AccountHolderDTO;
 import com.wearewaes.model.CardDTO;
 import com.wearewaes.model.NewAccountDTO;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +13,6 @@ import static com.wearewaes.model.CardTypeEnum.CREDIT;
 import static com.wearewaes.model.CardTypeEnum.DEBIT;
 
 public class TestUtils {
-
-
 
     public static AccountDTO generateAccount(NewAccountDTO newAccount) {
         AccountDTO account = new AccountDTO();
@@ -45,7 +44,7 @@ public class TestUtils {
         accountHolder.setId(identification);
         accountHolder.setFirstName("Jonathan");
         accountHolder.setLastName("de Paula");
-        accountHolder.setEmail("jonathan.paula@wearewaes.com");
+        accountHolder.setEmail("jonathan.paula"+ LocalDateTime.now() +"@wearewaes.com");
         accountHolder.setPhone("06200000000");
         accountHolder.setAddress("Zwaanstraat 31N, 5651 CA Eindhoven");
         newAccount.setHolder(accountHolder);
