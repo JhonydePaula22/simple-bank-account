@@ -17,6 +17,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import static com.wearewaes.simple_bank_account.TestConstants.ACCOUNTS_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.ADMIN_ACCOUNTS_BALANCES_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.ADMIN_CARDS_FEES_PATH;
 import static com.wearewaes.simple_bank_account.TestUtils.generateNewAccount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,12 +47,12 @@ class AdminControllerIT extends TestSetup {
 
             String dtoJson = objectMapper.writeValueAsString(newAccount);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(dtoJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated());
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/admin/accounts/balance")
+            mockMvc.perform(MockMvcRequestBuilders.get(ADMIN_ACCOUNTS_BALANCES_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
@@ -82,7 +85,7 @@ class AdminControllerIT extends TestSetup {
 
             String dtoJson = objectMapper.writeValueAsString(cardFeeDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.put("/admin/cards/fee")
+            mockMvc.perform(MockMvcRequestBuilders.put(ADMIN_CARDS_FEES_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(dtoJson)
                     )

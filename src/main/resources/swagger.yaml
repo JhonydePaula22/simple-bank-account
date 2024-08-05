@@ -18,13 +18,15 @@ tags:
   - name: admin
     description: Everything about Admin operations
 paths:
-  /admin/cards/fee:
+  /admin/cards/fees:
     put:
       tags:
         - admin
       summary: Replace Card Fee
       description: Here you may replace a card fee.
       operationId: updateCardFee
+      security:
+        - BearerAuth: []
       requestBody:
         description: Update card fee object
         content:
@@ -40,7 +42,7 @@ paths:
                 $ref: '#/components/schemas/CardFeeDTO'
         400:
           description: Invalid data provided
-  /admin/accounts/balance:
+  /admin/accounts/balances:
     get:
       tags:
         - admin
@@ -125,7 +127,7 @@ paths:
         404:
           description: Account not found
 
-  /transactions/withdraw:
+  /transactions/withdrawals:
     post:
       tags:
         - transactions
@@ -155,7 +157,7 @@ paths:
         404:
           description: Account not found
 
-  /transactions/transfer:
+  /transactions/transfers:
     post:
       tags:
         - transactions
@@ -185,7 +187,7 @@ paths:
           description: Forbidden
         404:
           description: Account not found
-  /transactions/deposit:
+  /transactions/deposits:
     post:
       tags:
         - transactions

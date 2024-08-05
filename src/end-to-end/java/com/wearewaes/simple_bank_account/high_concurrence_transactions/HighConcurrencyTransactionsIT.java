@@ -28,6 +28,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.wearewaes.simple_bank_account.TestConstants.ACCOUNTS_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.ACCOUNT_NUMBER_HEADER;
+import static com.wearewaes.simple_bank_account.TestConstants.ADMIN_ACCOUNTS_BALANCES_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.TRANSACTIONS_DEPOSITS_PATH;
 import static com.wearewaes.simple_bank_account.TestUtils.generateNewAccount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -95,7 +99,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
 
         String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newAccountDtoJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -109,10 +113,10 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
 
         String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+        mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(depositDtoJson)
-                        .header("account_number", accountDTO.getNumber())
+                        .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
                 ).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(result -> {
                     TransactionReceiptDTO response = objectMapper
@@ -145,7 +149,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
     }
 
     Double getAllAccountsBalanceSum() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/admin/accounts/balance")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(ADMIN_ACCOUNTS_BALANCES_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())

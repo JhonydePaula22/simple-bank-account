@@ -23,6 +23,12 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 
+import static com.wearewaes.simple_bank_account.TestConstants.ACCOUNTS_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.ACCOUNT_NUMBER_HEADER;
+import static com.wearewaes.simple_bank_account.TestConstants.DESTINATION_ACCOUNT_NUMBER_HEADER;
+import static com.wearewaes.simple_bank_account.TestConstants.TRANSACTIONS_DEPOSITS_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.TRANSACTIONS_TRANSFERS_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.TRANSACTIONS_WITHDRAWALS_PATH;
 import static com.wearewaes.simple_bank_account.TestUtils.generateNewAccount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,7 +54,7 @@ class TransactionsControllerIT extends TestSetup {
 
             String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
-            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountDtoJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -62,10 +68,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(depositDtoJson)
-                            .header("account_number", accountDTO.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
                     ).andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
                         TransactionReceiptDTO response = objectMapper
@@ -77,9 +83,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTO.setBalance(100.00);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTO.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -104,7 +110,7 @@ class TransactionsControllerIT extends TestSetup {
 
             String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
-            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountDtoJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -118,10 +124,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(depositDtoJson)
-                    .header("account_number", accountDTO.getNumber())
+                    .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
             ).andExpect(MockMvcResultMatchers.status().isOk());
 
             NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -131,10 +137,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/withdraw")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_WITHDRAWALS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(withdrawDtoJson)
-                            .header("account_number", accountDTO.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
                     ).andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
                         TransactionReceiptDTO response = objectMapper
@@ -146,9 +152,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTO.setBalance(50.00);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTO.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -167,7 +173,7 @@ class TransactionsControllerIT extends TestSetup {
 
             String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
-            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountDtoJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -181,10 +187,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(depositDtoJson)
-                    .header("account_number", accountDTO.getNumber())
+                    .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
             ).andExpect(MockMvcResultMatchers.status().isOk());
 
             NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -194,10 +200,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/withdraw")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_WITHDRAWALS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(withdrawDtoJson)
-                            .header("account_number", accountDTO.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
                     ).andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
                         TransactionReceiptDTO response = objectMapper
@@ -209,9 +215,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTO.setBalance(49.50);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTO.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTO.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -237,13 +243,13 @@ class TransactionsControllerIT extends TestSetup {
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
 
-            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountOriginJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
                     .andReturn();
 
-            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountDestinationJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -260,10 +266,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(depositDtoJson)
-                    .header("account_number", accountDTOOrigin.getNumber())
+                    .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
             ).andExpect(MockMvcResultMatchers.status().isOk());
 
             NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -273,11 +279,11 @@ class TransactionsControllerIT extends TestSetup {
 
             String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_TRANSFERS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(withdrawDtoJson)
-                            .header("account_number", accountDTOOrigin.getNumber())
-                            .header("destination_account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                            .header(DESTINATION_ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     ).andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
                         TransactionReceiptDTO response = objectMapper
@@ -289,9 +295,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTOOrigin.setBalance(50.00);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTOOrigin.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -304,9 +310,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTODestination.setBalance(50.00);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -327,13 +333,13 @@ class TransactionsControllerIT extends TestSetup {
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
 
-            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountOriginJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
                     .andReturn();
 
-            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountDestinationJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -350,10 +356,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(depositDtoJson)
-                    .header("account_number", accountDTOOrigin.getNumber())
+                    .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
             ).andExpect(MockMvcResultMatchers.status().isOk());
 
             NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -363,11 +369,11 @@ class TransactionsControllerIT extends TestSetup {
 
             String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_TRANSFERS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(withdrawDtoJson)
-                            .header("account_number", accountDTOOrigin.getNumber())
-                            .header("destination_account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                            .header(DESTINATION_ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     ).andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
                         TransactionReceiptDTO response = objectMapper
@@ -379,9 +385,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTOOrigin.setBalance(49.50);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTOOrigin.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -394,9 +400,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTODestination.setBalance(50.00);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -417,13 +423,13 @@ class TransactionsControllerIT extends TestSetup {
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
 
-            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountOriginJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
                     .andReturn();
 
-            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountDestinationJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -440,10 +446,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(depositDtoJson)
-                    .header("account_number", accountDTOOrigin.getNumber())
+                    .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
             ).andExpect(MockMvcResultMatchers.status().isOk());
 
             NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -454,11 +460,11 @@ class TransactionsControllerIT extends TestSetup {
 
             String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_TRANSFERS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(withdrawDtoJson)
-                            .header("account_number", accountDTOOrigin.getNumber())
-                            .header("destination_account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                            .header(DESTINATION_ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     ).andExpect(MockMvcResultMatchers.status().isBadRequest())
                     .andExpect(result -> {
                         ProblemDetail response = objectMapper
@@ -466,15 +472,15 @@ class TransactionsControllerIT extends TestSetup {
 
                         assertNotNull(response);
                         assertEquals("Card data is invalid. Please check and try again.", response.getDetail());
-                        assertEquals(URI.create("/transactions/transfer"), response.getInstance());
+                        assertEquals(URI.create(TRANSACTIONS_TRANSFERS_PATH), response.getInstance());
                         assertEquals("Invalid data on the request", response.getTitle());
                     });
 
             accountDTOOrigin.setBalance(100.00);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTOOrigin.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -485,9 +491,9 @@ class TransactionsControllerIT extends TestSetup {
                         assertEquals(accountDTOOrigin.getBalance(), response.getBalance());
                     });
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -508,13 +514,13 @@ class TransactionsControllerIT extends TestSetup {
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
 
-            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult1 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountOriginJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
                     .andReturn();
 
-            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            MvcResult mvcResult2 = mockMvc.perform(MockMvcRequestBuilders.post(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(newAccountDestinationJson))
                     .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -533,10 +539,10 @@ class TransactionsControllerIT extends TestSetup {
 
             String depositDtoJson = objectMapper.writeValueAsString(newAccountCreditTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/deposit")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_DEPOSITS_PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(depositDtoJson)
-                    .header("account_number", accountDTOOrigin.getNumber())
+                    .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
             ).andExpect(MockMvcResultMatchers.status().isOk());
 
             NewAccountDebitTransactionDTO debitTransactionDTO = new NewAccountDebitTransactionDTO();
@@ -546,11 +552,11 @@ class TransactionsControllerIT extends TestSetup {
 
             String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer")
+            mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_TRANSFERS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(withdrawDtoJson)
-                            .header("account_number", accountDTOOrigin.getNumber())
-                            .header("destination_account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
+                            .header(DESTINATION_ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     ).andExpect(MockMvcResultMatchers.status().isBadRequest())
                     .andExpect(result -> {
                         ProblemDetail response = objectMapper
@@ -558,15 +564,15 @@ class TransactionsControllerIT extends TestSetup {
 
                         assertNotNull(response);
                         assertEquals("The account number informed is not a valid one.", response.getDetail());
-                        assertEquals(URI.create("/transactions/transfer"), response.getInstance());
+                        assertEquals(URI.create(TRANSACTIONS_TRANSFERS_PATH), response.getInstance());
                         assertEquals("Account not found", response.getTitle());
                     });
 
             accountDTOOrigin.setBalance(100.00);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTOOrigin.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTOOrigin.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
@@ -579,9 +585,9 @@ class TransactionsControllerIT extends TestSetup {
 
             accountDTODestination.setNumber(correctDestinationAccount);
 
-            mockMvc.perform(MockMvcRequestBuilders.get("/accounts")
+            mockMvc.perform(MockMvcRequestBuilders.get(ACCOUNTS_PATH)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .header("account_number", accountDTODestination.getNumber())
+                            .header(ACCOUNT_NUMBER_HEADER, accountDTODestination.getNumber())
                     )
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(result -> {
