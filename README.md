@@ -1,12 +1,28 @@
 # **Simple Bank Account Simulation**
 
-**Overview**
+#### Summary
+
+* [Overview](#overview)
+* [Requirements & Validations](#requirements--validations)
+* [Assumptions](#assumptions)
+* [Future Considerations (Improvements)](#future-considerations)
+* [Technologies Used](#technologies-used)
+* [Database Diagram](#data-base-diagram)
+* [Running the project (Getting started)](#getting-started)
+  * [Requisites](#prerequisites)
+  * [Cloning the repository](#cloning-the-repository)
+  * [Running the application](#running-the-application)
+    * [Via script](#via-script)
+    * [Run it yourself](#run-it-yourself)
+  * [Swagger](#access-swagger-documentation)
+
+## **Overview**
 
 This project simulates a simple bank account system where users can transfer and withdraw money using debit or credit cards. The system charges an extra 1% fee for transactions done with a credit card.
 
-The project is built using Spring Boot 3.2 and Java 21, with PostgreSQL as the database, and is containerized using Docker. GitHub is used for version control and CI. Swagger is available for API documentation.
+The project is built using Spring Boot 3.2 and Java 21, with PostgresSQL as the database, and is containerized using Docker. GitHub is used for version control and CI. Swagger is available for API documentation.
 
-**Requirements & Validations**
+## **Requirements & Validations**
 
 - Negative balance is not allowed.
 - Each account must contain user details, card details, and the current balance.
@@ -18,7 +34,7 @@ The project is built using Spring Boot 3.2 and Java 21, with PostgreSQL as the d
 - All transfers and withdrawals should be auditable.
 
 
-**Assumptions**
+## **Assumptions**
 
 - Each user has only one account.
 - No different types of accounts are considered.
@@ -30,21 +46,20 @@ The project is built using Spring Boot 3.2 and Java 21, with PostgreSQL as the d
 - Authentication is done through an external service.
 
 
-**Future Considerations**
+## **Future Considerations**
 
 - The service is missing the authorization part. Right now all the endpoints are open to anyone to perform a request. As mentioned in the assumptions, the authentication should be handled by a different service and in the future, I would add the authorization checks in this service as well. Unfortunately I had not time to implement this, but in a real project I would add this, for sure.
 - Implement mechanisms to prevent the same transaction from being persisted twice (idempotence key, or other).
 - Add security mechanisms to prevent brute-forcing card details via the API. (rate limits or other)
-- Create REST API to retrieve transaction history.
 - Define how to expose audit data present in the transaction table (log stream, UI, API, monthly reports, or other).
 - Make card creation asynchronous to avoid account creation failure. (make usage of queues or other async mechanisms.)
-- Enhance encryption security. I have used a Symmetric-key algorithm which is not the most secure way and whoever has access to the key can see the values in the database (consider salting or other).
+- Enhance encryption security. I have used an algorithm which is not the most secure way where whoever has access to the key can see the values in the database (consider salting or other).
 - Improve the performance of the transaction table (e.g., partitioning by timestamp).
 - Setup tracing and metrics for observability using the preferred tool (Splunk, NewRelic or other).
 - As the application grows, if necessary, move the caching from local caching into distributed caching (Redis or other).
 
 
-**Technologies Used**
+## **Technologies Used**
 
 - Spring Boot 3.2
 - Java 21
@@ -56,11 +71,11 @@ The project is built using Spring Boot 3.2 and Java 21, with PostgreSQL as the d
 - GitHub Actions
 - Swagger
 
-**Data Base Diagram**
+## **Data Base Diagram**
 
 ![img.png](images/database_diagram.png)
 
-**Getting Started**
+## **Getting Started**
 
 ###### **Prerequisites**
 
@@ -68,7 +83,7 @@ The project is built using Spring Boot 3.2 and Java 21, with PostgreSQL as the d
 - Java 21
 - Maven
 
-###### Running the ApplicationRunning the Application
+###### Cloning the repository
 
 Clone the repository:
 
@@ -76,6 +91,10 @@ Clone the repository:
 git clone https://github.com/JhonydePaula22/simple-bank-account.git
 cd simple-bank-account
 ```
+
+##### Running the Application
+
+###### Via script
 
 I have created a [script](run.sh) to package and run the project. For that you **must have docker** running in your machine.
 
@@ -89,6 +108,8 @@ Running the script:
 ```shell
 ./run.sh
 ```
+
+###### Run it yourself
 
 You are of course entitled to run it yourself, so please follow the commands bellow:
 
@@ -161,6 +182,6 @@ docker run -e DB_PASSWORD=$DB_PASSWORD -e DB_URL=$DB_URL -e DB_USER=$DB_USER \
 --name simple-bank-account simple-bank-account:v1
 ```
 
-###### Access Swagger Documentation:Access Swagger Documentation:
+###### Access Swagger Documentation
 
-Open your browser and navigate to http://localhost:8080/v1/swagger-ui/index.html to explore the available REST endpoints.
+Open your browser and navigate to the swagger [url](http://localhost:8080/v1/swagger-ui/index.html) to explore the available REST endpoints.

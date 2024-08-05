@@ -4,6 +4,18 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- Create the 'accounts' schema
 CREATE SCHEMA IF NOT EXISTS accounts;
 
+-- Create the fee table
+CREATE TABLE accounts.fee (
+    type VARCHAR(10) PRIMARY KEY NOT NULL CHECK (type IN ('CREDIT', 'DEBIT')),
+    fee NUMERIC(5,2) DEFAULT 0
+);
+
+CREATE INDEX idx_type on accounts.fee(type);
+
+-- Inserting default values on database
+INSERT INTO accounts.fee (type, fee) VALUES ('CREDIT', 1.00);
+INSERT INTO accounts.fee (type, fee) VALUES ('DEBIT', 0.00);
+
 -- Create the holder table
 CREATE TABLE accounts.holder (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -35,7 +47,8 @@ CREATE TABLE accounts.card (
     cvv VARCHAR(50) NOT NULL,
     type VARCHAR(10) NOT NULL CHECK (type IN ('CREDIT', 'DEBIT')),
     account_id UUID NOT NULL,
-    FOREIGN KEY (account_id) REFERENCES accounts.account(id)
+    FOREIGN KEY (account_id) REFERENCES accounts.account(id),
+    FOREIGN KEY (type) REFERENCES accounts.fee(type)
 );
 
 CREATE INDEX idx_card_number ON accounts.card (number);
@@ -54,18 +67,6 @@ CREATE TABLE accounts.transaction (
     card_id VARCHAR(50),
     ref_transaction UUID NOT NULL
 );
-
--- Create the fee table
-CREATE TABLE accounts.fee (
-    type VARCHAR(10) PRIMARY KEY NOT NULL CHECK (type IN ('CREDIT', 'DEBIT')),
-    fee NUMERIC(5,2) DEFAULT 0
-);
-
-CREATE INDEX idx_type on accounts.fee(type);
-
--- Inserting default values on database
-INSERT INTO accounts.fee (type, fee) VALUES ('CREDIT', 1.00);
-INSERT INTO accounts.fee (type, fee) VALUES ('DEBIT', 0.00);
 
 
 -- Grant usage on the schema to the user
