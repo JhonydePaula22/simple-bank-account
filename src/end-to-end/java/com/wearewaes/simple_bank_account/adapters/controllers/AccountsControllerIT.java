@@ -46,7 +46,7 @@ class AccountsControllerIT extends TestSetup {
         @Test
         @DisplayName("with debit card")
         void testCreateAccountWithoutCreditCard() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(false, "Hfid*(&80709");
+            NewAccountDTO newAccount = generateNewAccount(false);
 
             String dtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -70,7 +70,7 @@ class AccountsControllerIT extends TestSetup {
         @Test
         @DisplayName("with debit and credit card")
         void testCreateAccountWithCreditCard() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(true, "&*(hGUYFy8");
+            NewAccountDTO newAccount = generateNewAccount(true);
 
             String dtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -95,7 +95,7 @@ class AccountsControllerIT extends TestSetup {
         @Test
         @DisplayName("account holder already exists. bad request")
         void testBadRequestCreateAccountWithUserAlreadyRegistered() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(false, "12345");
+            NewAccountDTO newAccount = generateNewAccount(false);
 
             String dtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -129,7 +129,7 @@ class AccountsControllerIT extends TestSetup {
         @Test
         @DisplayName("get a single account data")
         void testGetAccount() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(true, "(&ˆTGY&F&GYIO");
+            NewAccountDTO newAccount = generateNewAccount(true);
 
             String dtoJson = objectMapper.writeValueAsString(newAccount);
 

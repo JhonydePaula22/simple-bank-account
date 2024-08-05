@@ -50,7 +50,7 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("add money to account and verify balance")
         void testDepositMoneyToAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(false, "Hfid*(&8070fhjdsiah");
+            NewAccountDTO newAccount = generateNewAccount(false);
 
             String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -101,7 +101,7 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("no deposit with negative amount is allowed - bad request")
         void testDepositMoneyToAccountWithNegativeAmountReturnsBadRequest() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(false, "Hfid*(&8070fhjdsiah");
+            NewAccountDTO newAccount = generateNewAccount(false);
 
             String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -159,7 +159,7 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("withdraw money with debit card and check balance")
         void testWithdrawMoneyWithDebitCardFromAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(false, "Hfi0709gfdsuoadhsahbfv");
+            NewAccountDTO newAccount = generateNewAccount(false);
 
             String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -222,7 +222,7 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("withdraw money with credit card and check balance")
         void testWithdrawMoneyWithCreditFromAccountAndVerifyIfAccountBalanceIsUpdated() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(true, "BHDCsaud*(&80709");
+            NewAccountDTO newAccount = generateNewAccount(true);
 
             String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -290,8 +290,8 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("transfer money with debit card and check balance")
         void testTransferMoneyWithDebitCardFromAccountAndVerifyIfAccountsBalancesAreUpdated() throws Exception {
-            NewAccountDTO newAccountOrigin = generateNewAccount(false, "Hfi&*(TGY&80709");
-            NewAccountDTO newAccountDestination = generateNewAccount(false, "Hfi*()&80708");
+            NewAccountDTO newAccountOrigin = generateNewAccount(false);
+            NewAccountDTO newAccountDestination = generateNewAccount(false);
 
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -380,8 +380,8 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("transfer money with credit card and check balance")
         void testTransferMoneyWithCreditCardFromAccountAndVerifyIfAccountsBalancesAreUpdated() throws Exception {
-            NewAccountDTO newAccountOrigin = generateNewAccount(true, "HfiXFH709");
-            NewAccountDTO newAccountDestination = generateNewAccount(false, "HfiNJKNL0708");
+            NewAccountDTO newAccountOrigin = generateNewAccount(true);
+            NewAccountDTO newAccountDestination = generateNewAccount(false);
 
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -470,8 +470,8 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("transfer money with wrong credit card details. bad request balances not changed")
         void testTransferMoneyWithCreditBadRequestWrongCardDetailsNoBalanceUpdateAfterBadRequest() throws Exception {
-            NewAccountDTO newAccountOrigin = generateNewAccount(true, "Hfi%&*09");
-            NewAccountDTO newAccountDestination = generateNewAccount(false, "HVGHJd*(&80708");
+            NewAccountDTO newAccountOrigin = generateNewAccount(true);
+            NewAccountDTO newAccountDestination = generateNewAccount(false);
 
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -561,8 +561,8 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("transfer money with wrong destination account details. bad request balances not changed")
         void testTransferMoneyWithDebitBadRequestWrongDestinationAccountNoBalanceUpdateAfterBadRequest() throws Exception {
-            NewAccountDTO newAccountOrigin = generateNewAccount(false, "HfNKJLBJLK&80709");
-            NewAccountDTO newAccountDestination = generateNewAccount(false, "HfCRTFT80708");
+            NewAccountDTO newAccountOrigin = generateNewAccount(false);
+            NewAccountDTO newAccountDestination = generateNewAccount(false);
 
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -655,8 +655,8 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("no transfer money with negative amount is allowed. bad request balances not changed")
         void testTransferMoneyWithNegativeAmountNoBalanceUpdateAfterBadRequest() throws Exception {
-            NewAccountDTO newAccountOrigin = generateNewAccount(true, "Hfi%&*09");
-            NewAccountDTO newAccountDestination = generateNewAccount(false, "HVGHJd*(&80708");
+            NewAccountDTO newAccountOrigin = generateNewAccount(true);
+            NewAccountDTO newAccountDestination = generateNewAccount(false);
 
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
             String newAccountDestinationJson = objectMapper.writeValueAsString(newAccountDestination);
@@ -733,7 +733,7 @@ class TransactionsControllerIT extends TestSetup {
         @Test
         @DisplayName("no withdraw money with negative amount is allowed. bad request balances not changed")
         void testWithdrawMoneyWithNegativeAmountNoBalanceUpdateAfterBadRequest() throws Exception {
-            NewAccountDTO newAccountOrigin = generateNewAccount(true, "Hfi%&*09");
+            NewAccountDTO newAccountOrigin = generateNewAccount(true);
 
             String newAccountOriginJson = objectMapper.writeValueAsString(newAccountOrigin);
 

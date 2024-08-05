@@ -31,7 +31,9 @@ import java.util.concurrent.Future;
 import static com.wearewaes.simple_bank_account.TestConstants.ACCOUNTS_PATH;
 import static com.wearewaes.simple_bank_account.TestConstants.ACCOUNT_NUMBER_HEADER;
 import static com.wearewaes.simple_bank_account.TestConstants.ADMIN_ACCOUNTS_BALANCES_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.DESTINATION_ACCOUNT_NUMBER_HEADER;
 import static com.wearewaes.simple_bank_account.TestConstants.TRANSACTIONS_DEPOSITS_PATH;
+import static com.wearewaes.simple_bank_account.TestConstants.TRANSACTIONS_TRANSFERS_PATH;
 import static com.wearewaes.simple_bank_account.TestUtils.generateNewAccount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -56,7 +58,7 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
     @DisplayName("execute 1000 transactions of transfer with debit card and the total balance in the end must be equal to the initial amount of money")
     public void testHighConcurrencyTransactions() throws Exception {
         for (int i = 0; i < NUM_ACCOUNTS; i++) {
-            AccountDTO account = createAccountDTOAndDepositMoney("id_" + i, INITIAL_BALANCE);
+            AccountDTO account = createAccountDTOAndDepositMoney(INITIAL_BALANCE);
             accounts.add(account);
         }
 
@@ -94,8 +96,8 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
         assertEquals(initialTotalBalance, getAllAccountsBalanceSum(), 0.01);
     }
 
-    private AccountDTO createAccountDTOAndDepositMoney(String identification, Double amount) throws Exception {
-        NewAccountDTO newAccount = generateNewAccount(false, identification);
+    private AccountDTO createAccountDTOAndDepositMoney(Double amount) throws Exception {
+        NewAccountDTO newAccount = generateNewAccount(false);
 
         String newAccountDtoJson = objectMapper.writeValueAsString(newAccount);
 
@@ -140,11 +142,11 @@ public class HighConcurrencyTransactionsIT extends TestSetup {
 
         String withdrawDtoJson = objectMapper.writeValueAsString(debitTransactionDTO);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/transactions/transfer")
+        mockMvc.perform(MockMvcRequestBuilders.post(TRANSACTIONS_TRANSFERS_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(withdrawDtoJson)
-                .header("account_number", origin.getNumber())
-                .header("destination_account_number", destination.getNumber())
+                .header(ACCOUNT_NUMBER_HEADER, origin.getNumber())
+                .header(DESTINATION_ACCOUNT_NUMBER_HEADER, destination.getNumber())
         );
     }
 

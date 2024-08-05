@@ -43,7 +43,7 @@ class AdminControllerIT extends TestSetup {
         @Test
         @DisplayName("get a all accounts balance paginated")
         void testGetAllAccountsBalance() throws Exception {
-            NewAccountDTO newAccount = generateNewAccount(true, "GKUYTÎˆ*GF%&");
+            NewAccountDTO newAccount = generateNewAccount(true);
 
             String dtoJson = objectMapper.writeValueAsString(newAccount);
 
